@@ -39,14 +39,14 @@ export const AttendancePage: React.FC = () => {
           {/* Wrapper div for making the table scrollable */}
           <div className="bg-panelButtonColor w-4/6 rounded-md">
             <div className="h-full min-w-full text-center">
-              <div className="h-[17%] font-jetbrains grid grid-flow-col content-center text-primaryYellow text-xl sticky bg-panelColor">
+              <div className="h-24 font-jetbrains grid grid-flow-col content-center text-primaryYellow text-xl sticky bg-panelColor">
                 <div>Member</div>
                 <div>Year</div>
                 <div>Time In</div>
                 <div>Time Out</div>
                 <div>Date</div>
               </div>
-              <div className="text-offWhite overflow-y-auto h-[83%] font-jetbrains text-base font-extrabold">
+              <div className="text-offWhite overflow-y-auto h-[31rem] font-jetbrains text-base font-extrabold">
                 {loading ? (
                   <div>Loading...</div>
                 ) : error ? (
@@ -61,7 +61,7 @@ export const AttendancePage: React.FC = () => {
                       timeout={attendance.timeout.substring(0, 8)}
                       date={attendance.date}
                       year={attendance.year} 
-                                   />
+                    />
                   ))
                 ) : (
                   <div>No attendance records found</div>
@@ -69,7 +69,11 @@ export const AttendancePage: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col bg-panelButtonColor w-2/6 rounded-md"></div>
+          <div className="flex flex-1 flex-col gap-4">
+            
+            <div className="flex flex-col h-full w-full bg-panelButtonColor w-2/6 rounded-md"></div>
+            <div className="flex flex-col h-full w-full bg-panelButtonColor w-2/6 rounded-md"></div>
+          </div>
         </div>
       </div>
     </div>
