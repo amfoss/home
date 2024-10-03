@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {createBrowserRouter, RouterProvider,} from  "react-router-dom";
 import "@fontsource/jetbrains-mono"; 
-import { Attendancepage } from './attendance-track/pages/attendance-page';
+import { AttendancePage } from './attendance-track/pages/attendance-page';
 import "./index.css";
 
 const router = createBrowserRouter([
@@ -12,7 +12,7 @@ const router = createBrowserRouter([
   }, 
   {
     path: "/attendance",
-    element: <Attendancepage/>
+    element: <AttendancePage/>
   }
 ]);
 
