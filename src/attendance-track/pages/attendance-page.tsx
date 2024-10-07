@@ -13,10 +13,21 @@ export const AttendancePage: React.FC = () => {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const date = '2024-10-03'; // Replace with actual date as necessary
+        // Get today's date in IST
+        const today = new Date().toLocaleDateString('en-GB', { 
+          timeZone: 'Asia/Kolkata',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        
+        // Format it as 'YYYY-MM-DD'
+        const [day, month, year] = today.split('/');
+        const date = `${year}-${month}-${day}`; // 'YYYY-MM-DD' format
+    
         const data = await AttendanceService.getAttendanceDetails(date);
-
-        console.log(data)
+    
+        console.log(data);
         setAttendanceData(data);
         setLoading(false);
       } catch (err) {
@@ -24,7 +35,7 @@ export const AttendancePage: React.FC = () => {
         setLoading(false);
       }
     };
-
+    
     fetchAttendanceData();
   }, []);
 
