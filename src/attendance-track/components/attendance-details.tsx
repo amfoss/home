@@ -9,7 +9,6 @@ export const AttendanceDetailRow: React.FC<AttendanceDetails> = ({
   isPresent,
 }) => {
 
-  console.log(isPresent+memberName);
   return (
     <div
       className={`h-20 font-jetbrains grid grid-cols-5 gap-4 content-center text-xl px-4 truncate ${
