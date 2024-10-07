@@ -2,7 +2,8 @@
 export type AttendanceDetails = {
   id: string;         
   timein: string;     
-  timeout: string;    
+  timeout: string; 
+  isPresent: boolean;   
   date: string;       
   memberName: string; 
   year: string;

@@ -26,8 +26,6 @@ export const AttendancePage: React.FC = () => {
         const date = `${year}-${month}-${day}`; // 'YYYY-MM-DD' format
     
         const data = await AttendanceService.getAttendanceDetails(date);
-    
-        console.log(data);
         setAttendanceData(data);
         setLoading(false);
       } catch (err) {
@@ -72,6 +70,7 @@ export const AttendancePage: React.FC = () => {
                       timeout={attendance.timeout.substring(0, 8)}
                       date={attendance.date}
                       year={attendance.year} 
+                      isPresent = {attendance.isPresent}
                     />
                   ))
                 ) : (

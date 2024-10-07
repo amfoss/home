@@ -10,6 +10,7 @@ const GET_ATTENDANCE_DETAILS_QUERY = gql`
       timein
       timeout
       date
+      isPresent
     }
   }
 `;
@@ -51,7 +52,6 @@ export const AttendanceService = {
         year: memberMap.get(attendance.id)?.year || 'Unknown',       // Get member year or default to 'Unknown'
       }));
 
-      console.log(enrichedAttendance);
       return enrichedAttendance;
     } catch (error) {
       console.error('Error fetching attendance details:', error);
