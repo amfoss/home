@@ -40,11 +40,11 @@ export const AttendancePage: React.FC = () => {
   return (
     <div className="flex h-screen flex-row">
       <SidePanel />
-      <div className="flex flex-col w-full h-full p-5">
+      <div className="md: flex flex-col w-full h-full p-5">
         <div className="flex flex-[1] w-full">
           {/* Additional content can go here */}
         </div>
-        <div className="flex flex-[2] w-full gap-5">
+        <div className=" flex flex-[2] w-full gap-5">
           {/* Wrapper div for making the table scrollable */}
           <div className="bg-panelButtonColor w-4/6 rounded-md">
             <div className="h-full min-w-full text-center">
