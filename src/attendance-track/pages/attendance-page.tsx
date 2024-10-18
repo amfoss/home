@@ -10,6 +10,20 @@ export const AttendancePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const attendanceListTitle = [
+    "Name",
+      "Year",
+    "Date",
+    "In Time",
+    "Out Time",
+
+  ];
+  // const absentListTitle = [
+  //   "Name",
+  //   "Year",
+  // ];
+
+
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
@@ -29,7 +43,7 @@ export const AttendancePage: React.FC = () => {
         setAttendanceData(data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch attendance data');
+        setError('Failed to fetch attendance data'+err);
         setLoading(false);
       }
     };
@@ -37,54 +51,32 @@ export const AttendancePage: React.FC = () => {
     fetchAttendanceData();
   }, []);
 
+
+  const presentMembers = attendanceData.filter(member => member.isPresent);
+  const absentMembers = attendanceData.filter(member => !member.isPresent);
+  const filteredData = [...presentMembers, ...absentMembers];
+
   return (
-    <div className="flex h-screen flex-row">
-      <SidePanel />
-      <div className="md: flex flex-col w-full h-full p-5">
-        <div className="flex flex-[1] w-full">
+    <div className="flex h-screen flex-row border w-screen flex-shrink-0">
+      <div className="w-2/12 max-w-"><SidePanel /></div>
+      <div className="flex flex-col w-10/12 h-full p-5 ">
+        <div className="flex flex-[1] w-full max-h-10">
           {/* Additional content can go here */}
         </div>
-        <div className=" flex flex-[2] w-full gap-5">
-          {/* Wrapper div for making the table scrollable */}
-          <div className="bg-panelButtonColor w-4/6 rounded-md">
-            <div className="h-full min-w-full text-center">
-              <div className="h-24 font-jetbrains grid grid-flow-col content-center text-primaryYellow text-xl sticky bg-panelColor">
-                <div>Member</div>
-                <div>Year</div>
-                <div>Time In</div>
-                <div>Time Out</div>
-                <div>Date</div>
-              </div>
-              <div className="text-offWhite overflow-y-auto h-[31rem] font-jetbrains text-base font-extrabold">
-                {loading ? (
-                  <div>Loading...</div>
-                ) : error ? (
-                  <div>{error}</div>
-                ) : attendanceData.length > 0 ? (
-                  attendanceData.map((attendance, index) => (
-                    <AttendanceDetailRow
-                      key={index}
-                      id={attendance.id}
-                      memberName={attendance.memberName}    
-                      timein={attendance.timein.substring(0, 8)}
-                      timeout={attendance.timeout.substring(0, 8)}
-                      date={attendance.date}
-                      year={attendance.year} 
-                      isPresent = {attendance.isPresent}
-                    />
-                  ))
-                ) : (
-                  <div>No attendance records found</div>
-                )}
-              </div>
+        <div className="flex flex-col lg:flex-row w-full">
+          <AttendanceDetailRow complete={true} titles={attendanceListTitle} loading={loading} attendanceData={filteredData} error={error}/>
+
+          {/* Flex container for the boxes */}
+          <div className="flex flex-col lg:flex-col gap-4 lg:w-2/5 lg:h-full w-full lg:ml-5 lg:mt-0 mt-5 md:w-full md:h-56 ">
+            <div className="flex flex-col bg-panelButtonColor rounded-md p-4 h-full">
+              {/*TODO: need to implement absentee list.*/}
+            </div>
+            <div className="flex flex-col bg-panelButtonColor rounded-md p-4 h-full">
+              {/*need to implement some sorta graph*/}
             </div>
           </div>
-          <div className="flex flex-1 flex-col gap-4">
-            
-            <div className="flex flex-col h-full w-full bg-panelButtonColor w-2/6 rounded-md"></div>
-            <div className="flex flex-col h-full w-full bg-panelButtonColor w-2/6 rounded-md"></div>
-          </div>
         </div>
+
       </div>
     </div>
   );
