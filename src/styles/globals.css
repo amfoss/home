@@ -23,6 +23,35 @@ li span {
   }
 
   li:hover span {
-    transform: translateY(0) scale(1.5); /* Adjust scale on hover */
+    transform: translateY(0) scale(1.5);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0dvw;
+  height: 0.35dvh;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #444;
   }
 }
