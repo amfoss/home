@@ -8,7 +8,7 @@ type SideBarButtonProps = {
 
 const SideBarButton: React.FC<SideBarButtonProps> = ({ icon, text, onClick }) => {
   return (
-    <li
+    <div
       className="lg:flex justify-center items-center max-w-full bg-panelButtonColor p-5 rounded-none sm:rounded-md md:rounded-xl text-white overflow-hidden cursor-pointer transition-colors duration-500"
       onClick={() => onClick(text)}
       title={text}
@@ -24,7 +24,7 @@ const SideBarButton: React.FC<SideBarButtonProps> = ({ icon, text, onClick }) =>
       <div className="flex-1 flex items-center justify-center z-20">
         <div className="text-base lg:text-lg hidden md:block">{text}</div>
       </div>
-    </li>
+    </div>
   );
 };
 
