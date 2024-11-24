@@ -1,11 +1,11 @@
 // Type for the AttendanceDetails object returned by the query
 export type AttendanceDetails = {
-  id: string;         
-  timein: string;     
-  timeout: string; 
-  isPresent: boolean;   
-  date: string;       
-  memberName: string; 
+  id: string;
+  timein: string;
+  timeout: string;
+  isPresent: boolean;
+  date: string;
+  memberName: string;
   year: string;
 };
 
@@ -31,4 +31,4 @@ export type GetAttendanceDetailsQueryResponse = {
 
 export type GetMemberDetailsQueryResponse = {
   getMember: Member[];
-}
+};
