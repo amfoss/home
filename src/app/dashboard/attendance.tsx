@@ -64,7 +64,7 @@ export const AttendancePage: React.FC = () => {
         <div className="flex flex-[1] w-full max-h-10">
           {/* Additional content can go here */}
         </div>
-        <div className="flex flex-col max-h-full lg:flex-row w-full">
+        <div className="flex flex-col min-h-full lg:flex-row w-full">
           <AttendanceDetailRow complete={true} titles={attendanceListTitle} loading={loading} attendanceData={filteredData} error={error} />
 
           {/* Flex container for the boxes */}
