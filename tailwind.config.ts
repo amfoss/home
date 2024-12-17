@@ -22,6 +22,25 @@ export default {
       textColor: {
         offWhite: "#CDCDCD",
       },
+      animation: {
+        fadeInUp: "fadeInUp 2s ease-in-out 0.9s forwards",
+      },
+      keyframes: {
+        fadeInUp: {
+          "0%": {
+            opacity: "0",
+          },
+          "100%": {
+            opacity: "1",
+          },
+        },
+      },
+      screens: {
+        sm: '0px',
+        md: '640px',
+        lg: '1024px',
+        xl: '1280px',
+      },
     },
   },
   plugins: [],
