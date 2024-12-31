@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
                     <Sidebar />
                 </div>
                 {/* Content area will take the remaining space */}
-                <div className="w-10/12">
+                <div className="w-10/12 bg-bgMainColor">
                     {children}
                 </div>
             </div>
