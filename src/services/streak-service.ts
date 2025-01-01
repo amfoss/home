@@ -173,7 +173,7 @@ export const DashboardService = {
           year: member.year,
           statusStreak: status.streak,
           maxStatusStreak: status.maxStreak,
-          projects: projectMap.get(member.id) || ["Unknown"],
+          projects: projectMap.get(member.id) || ["N/A"],
           attendanceStreak: presentDays,
           attendanceMonth: `${presentDays}/${maxDays}`,
         };

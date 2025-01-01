@@ -91,7 +91,6 @@ const Dashboard = () => {
 
             const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
             setMemberSummary(response);
-            console.log(memberSummary)
         } catch (err) {
             setError("Failed to fetch member summary data.");
             setMemberSummary(null);
@@ -212,36 +211,42 @@ const Dashboard = () => {
                             <div className="flex justify-between min-w-full">
                                 <CardTitle>
                                     Low on count
-                                    <CardDescription>
+                                    <CardDescription className="mt-2">
                                         From {getDateRange(selectedDate, 30)}
                                     </CardDescription>
                                 </CardTitle>
-                                <div className="flex items-center justify-between w-44 h-8 bg-bgMainColor rounded-2xl px-2 relative transition-transform ease-in-out duration-500">
+                                <div className="relative flex items-center justify-between w-44 h-8 bg-bgMainColor rounded-2xl px-2 min-w-fit">
+                                    {/* Highlighter */}
                                     <div
-                                        className={`text-white text-xs font-medium cursor-pointer relative z-10 ${selected === "attendance" ? "font-semibold" : ""}`}
+                                        className={`absolute top-0 left-0 h-8  bg-yellow-400 rounded-2xl opacity-30 transition-transform duration-500`}
+                                        style={{
+                                            width: selected === "attendance" ? "5rem" : "6rem",
+                                            transform: selected === "attendance" ? "translateX(0)" : "translateX(5rem)",
+                                        }}
+                                    />
+
+                                    {/* Attendance Option */}
+                                    <div
+                                        className={`text-white flex-1 text-xs font-medium cursor-pointer relative z-10`}
                                         onClick={() => setSelected("attendance")}
                                     >
                                         Attendance
-                                        {selected === "attendance" && (
-                                            <div className="h-8 translate-y-[-8px] translate-x-[-8px] w-20 absolute inset-0 p-2 bg-yellow-400 rounded-2xl opacity-30 " />
-                                        )}
                                     </div>
 
+                                    {/* Status Updates Option */}
                                     <div
-                                        className={`text-white text-xs font-medium cursor-pointer relative z-10 ${selected === "status" ? "font-semibold" : ""}`}
+                                        className={`text-white ml-3 text-xs font-medium cursor-pointer relative z-10`}
                                         onClick={() => setSelected("status")}
                                     >
                                         Status Updates
-                                        {selected === "status" && (
-                                            <div className="h-8 translate-y-[-8px] translate-x-[-8px] w-[6.3rem] absolute inset-0 p-2 bg-yellow-400 rounded-2xl opacity-30 " />
-                                        )}
                                     </div>
                                 </div>
+
                             </div>
                         </CardHeader>
                         <CardContent>
                             <div className="w-full h-48 overflow-y-scroll">
-                                <div className="grid grid-cols-[1fr,minmax(50px,auto),minmax(50px,auto)] items-center w-full">
+                                <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
                                     <div className="px-5">Name</div>
                                     <div className="pl-5">Attended</div>
                                     <div className="pl-5">Missed</div>
@@ -263,7 +268,7 @@ const Dashboard = () => {
                     </Card>
                 </div>
                 <h3 className="text-lg font-semibold mt-5">Hall Of Fame</h3>
-                <div className="flex  w-full mt-2 text-ye">
+                <div className="flex flex-col md:flex-row w-full mt-2 text-ye">
                     <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
                         <CardHeader>
                             <CardTitle className="text-yellow-500">Most Attendance</CardTitle>
@@ -291,7 +296,7 @@ const Dashboard = () => {
                     </Card>
                 </div>
                 <Card
-                    className="m-2 bg-panelButtonColor w-full">
+                    className="m-2 bg-panelButtonColor w-[98.5%]">
                     <CardHeader options={
                         <div className="flex items-center space-x-2">
                             <div className="relative w-44">
