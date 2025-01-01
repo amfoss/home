@@ -149,11 +149,11 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
                             }`}
                         onClick={() => handleDateClick(dateObj)}
                     >
-                        <span className="text-xs font-light text-AmfossYellow">{weekdays[dateObj.getDay()]}</span>
+                        <span className="text-xs font-light text-primaryYellow">{weekdays[dateObj.getDay()]}</span>
                         <span className="text-lg font-bold mt-1">{dateObj.getDate()}</span>
                         {/* Circle indicator only for today's date */}
                         {dateObj.toDateString() === today.toDateString() && (
-                            <div className="absolute top-full left-1/2 w-2 h-2 bg-AmfossYellow rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="absolute top-full left-1/2 w-2 h-2 bg-primaryYellow rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
                         )}
                     </div>
                 ))}

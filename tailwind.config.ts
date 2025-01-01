@@ -18,6 +18,10 @@ export default {
         hoverPanelButtonColor: "#2B2A22",
         panelButtonColor: "#292929",
         goldenrod: "#daa520",
+        muted: {
+          DEFAULT: "#6c757d",
+          foreground: "#8a8d91",
+        },
       },
       textColor: {
         offWhite: "#CDCDCD",
@@ -36,10 +40,10 @@ export default {
         },
       },
       screens: {
-        sm: '0px',
-        md: '640px',
-        lg: '1024px',
-        xl: '1280px',
+        sm: "0px",
+        md: "640px",
+        lg: "1024px",
+        xl: "1280px",
       },
     },
   },

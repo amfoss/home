@@ -1,22 +1,22 @@
 "use client";
 import React from "react";
 import SideBarButton from "./SidebarButton";
-import { Award, CalendarCheck2, UserRound } from "lucide-react";
+import { Award, CalendarCheck2, Home } from "lucide-react";
 import { useSelectedButton } from "@/context/SelectedButtonContext"; // Adjust the path as necessary
 import Image from 'next/image';
 
 const buttons = [
     {
-        name: "Attendance",
-        icon: <CalendarCheck2 />
+        name: "Dashboard",
+        icon: <Home />
     },
     {
         name: "Leaderboard",
         icon: <Award />
     },
     {
-        name: "Profile",
-        icon: <UserRound />
+        name: "Attendance",
+        icon: <CalendarCheck2 />
     }
 ];
 
@@ -25,7 +25,6 @@ const SidePanel: React.FC = () => {
 
     const handleButtonClick = (name: string) => {
         setSelectedButton(name);
-        console.log(`${name} button clicked`);
     };
 
     return (
