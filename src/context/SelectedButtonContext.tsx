@@ -11,7 +11,7 @@ const SelectedButtonContext = createContext<SelectedButtonContextType | undefine
 
 // Create a provider component
 export const SelectedButtonProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [selectedButton, setSelectedButton] = useState<string>("attendance");
+    const [selectedButton, setSelectedButton] = useState<string>("dashboard");
 
     return (
         <SelectedButtonContext.Provider value={{ selectedButton, setSelectedButton }}>
