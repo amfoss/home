@@ -4,9 +4,11 @@ import { ReactNode } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import client from "@/lib/apollo-client";
 import icon from "@/../public/amfoss-logo-white-square.png";
-export default function Layout({ children }: { children: ReactNode }) {
+import { MemberProvider } from '@/context/MemberContext';
+
+export default function RootLayout({ children }: { children: ReactNode }) {
     return (
-        <html>
+        <html lang="en">
             <head>
                 <link rel="icon" type="image/png" href={icon.src} sizes="32x32" />
                 <meta charSet="UTF-8" />
@@ -14,9 +16,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <title>Home</title>
             </head>
             <body className="w-screen h-screen">
-                <ApolloProvider client={client}>
-                    {children}
-                </ApolloProvider>
+                <MemberProvider>
+                    <ApolloProvider client={client}>
+                        {children}
+                    </ApolloProvider>
+                </MemberProvider>
             </body>
         </html>
     );

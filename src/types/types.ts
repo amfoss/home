@@ -24,7 +24,6 @@ export type Attendance = {
   timeOut: string;
 };
 
-// Type for the GraphQL Query response for attendance details
 export type GetAttendanceDetailsQueryResponse = {
   getAttendance: AttendanceDetails[];
 };
@@ -32,11 +31,15 @@ export type GetAttendanceDetailsQueryResponse = {
 export type GetMemberDetailsQueryResponse = {
   getMember: Member[];
 };
-// Represents the basic details of a member
+
 export interface MemberDetails {
-  id: string; // Unique identifier for the member
-  name: string; // Name of the member
-  year: string; // Year associated with the member (e.g., "Senior", "Junior")
+  id: string;
+  name: string;
+  year: string;
+  hostel: string;
+  email: string;
+  discordId: string;
+  groupId: string;
 }
 
 // Represents enriched data for each member

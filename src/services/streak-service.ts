@@ -10,6 +10,10 @@ const GET_MEMBERS_QUERY = gql`
       id
       name
       year
+      hostel
+      email
+      discordId
+      groupId
     }
   }
 `;
@@ -171,6 +175,10 @@ export const DashboardService = {
           id: member.id,
           name: member.name,
           year: member.year,
+          hostel: member.hostel,
+          email: member.email,
+          discordId: member.discordId,
+          groupId: member.groupId,
           statusStreak: status.streak,
           maxStatusStreak: status.maxStreak,
           projects: projectMap.get(member.id) || ["N/A"],
