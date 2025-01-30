@@ -2,22 +2,14 @@
 import { getGithubUsername } from '@/services/temp-github-username-map';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import GitHubCalendar from 'react-github-calendar';
 import { ArrowLeft, Github, GithubIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Line } from 'react-chartjs-2';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js';
-import { useState } from 'react';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js/auto';
+import { useState, useMemo, useEffect } from 'react';
 import { useMember } from '@/context/MemberContext';
+import dynamic from 'next/dynamic';
+import { memo } from 'react';
 
 ChartJS.register(
     CategoryScale,
@@ -46,10 +38,21 @@ const mockActiveProjects = [
     'project 6'
 ];
 
-export default function MemberDetails() {
+const GitHubCalendar = dynamic(() => import('react-github-calendar'), {
+    ssr: false,
+    loading: () => <div className="h-full animate-pulse bg-gray-700/20 rounded-lg" />
+});
+
+const MemberDetails = memo(() => {
     const { selectedMember } = useMember();
-    const [imgSrc, setImgSrc] = useState(`https://avatars.githubusercontent.com/u/${getGithubUsername(Number(selectedMember?.id))}`);
+    const [imgSrc, setImgSrc] = useState('/avatarplaceholder.png');
     const [retryCount, setRetryCount] = useState(0);
+
+    useEffect(() => {
+        if (selectedMember?.id) {
+            setImgSrc(`https://avatars.githubusercontent.com/u/${getGithubUsername(Number(selectedMember.id))}`);
+        }
+    }, [selectedMember?.id]);
 
     const handleImageError = () => {
         if (retryCount < 2) {
@@ -62,7 +65,7 @@ export default function MemberDetails() {
 
     if (!selectedMember) return <div>Loading...</div>;
 
-    const constancyData = {
+    const constancyData = useMemo(() => ({
         labels: mockData.labels,
         datasets: [
             {
@@ -80,9 +83,9 @@ export default function MemberDetails() {
                 borderWidth: 2,
             }
         ]
-    };
+    }), []);
 
-    const options = {
+    const options = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -118,7 +121,7 @@ export default function MemberDetails() {
                 display: false
             }
         }
-    };
+    }), []);
 
     return (
         <div className="h-screen bg-bgMainColor overflow-hidden">
@@ -229,4 +232,6 @@ export default function MemberDetails() {
             </div>
         </div>
     );
-}
+});
+
+export default MemberDetails;
