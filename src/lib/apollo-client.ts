@@ -2,7 +2,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: "https://root.shuttleapp.rs/",
+  uri: "https://root.amfoss.in/",
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {
