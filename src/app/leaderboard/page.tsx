@@ -7,7 +7,7 @@ export default function Home() {
   const [alltimemode, setmode] = useState(false);
 
   return (
-    <li className="w-full overflow-hidden gap-7 flex flex-col items-center bg-gradient-to-b from-[#161616] via-[#161616] to-[rgb(56,8,8)]">
+    <li className="w-full overflow-hidden gap-7 flex flex-col items-center bg-[#161616]">
       <p className="mt-5 text-center text-white text-[3rem] sm:text-[2.5rem] md:text-[4.2rem] lg:text-[5rem] font-medium">
         Leaderboard
       </p>
