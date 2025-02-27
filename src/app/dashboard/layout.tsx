@@ -7,8 +7,8 @@ import { SelectedButtonProvider } from '@/context/SelectedButtonContext';
 const DashboardLayout = ({ children }: PropsWithChildren) => {
     return (
         <SelectedButtonProvider>
-            <div className="flex h-screen w-screen overflow-hidden ">
-                <div className='w-2/12'>
+            <div className="flex min-h-screen w-full ">
+                <div className='w-2/12 h-screen top-0 sticky'>
                     <Sidebar />
                 </div>
                 {/* Content area will take the remaining space */}

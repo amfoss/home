@@ -18,6 +18,12 @@ export default {
         hoverPanelButtonColor: "#2B2A22",
         panelButtonColor: "#292929",
         goldenrod: "#daa520",
+        LeaderBoardGold: "#EFBF04",
+        LeaderBoardSilver: "#a1a1a1",
+        LeaderBoardBronze: "#804A00",
+        LeaderBoardCommon: "#232323",
+        LeaderBoardCommonHigh: "#303030",
+
         muted: {
           DEFAULT: "#6c757d",
           foreground: "#8a8d91",
