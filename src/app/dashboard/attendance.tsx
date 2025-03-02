@@ -58,9 +58,9 @@ export const AttendancePage: React.FC = () => {
   const filteredData = [...presentMembers, ...absentMembers];
 
   return (
-    <div className="flex h-screen flex-row  w-screen flex-shrink-0 ">
+    <div className="flex h-screen flex-row  w-full flex-shrink-0 ">
 
-      <div className="flex flex-col w-10/12 max-h-fit p-5  ">
+      <div className="flex flex-col w-full max-h-fit p-5  ">
         <div className="flex flex-[1] w-full max-h-10">
           {/* Additional content can go here */}
         </div>
