@@ -16,12 +16,14 @@ import {
     Legend,
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
-import MemberDetails from "./[memberId]/page";
+import { MemberDetails as MemberDetailsType } from "@/types/types";
+import { useMember } from '@/context/MemberContext';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
     const router = useRouter();
+    const { setSelectedMember } = useMember();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [attendanceData, setAttendanceData] = useState<number[]>([]);
@@ -155,7 +157,8 @@ const Dashboard = () => {
         return date.toLocaleDateString("en-US", options);
     };
 
-    const navigateToMemberDetails = (member: MemberDetails) => {
+    const navigateToMemberDetails = (member: MemberDetailsType) => {
+        setSelectedMember(member);
         router.push(`/dashboard/${member.id}`);
     };
 
