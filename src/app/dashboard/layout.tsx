@@ -8,11 +8,11 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
     return (
         <SelectedButtonProvider>
             <div className="flex min-h-screen w-full ">
-                <div className='w-2/12 h-screen top-0 sticky'>
+                <div className="fixed left-0 top-0 h-screen z-50 md:w-2/12 md:sticky">
                     <Sidebar />
                 </div>
                 {/* Content area will take the remaining space */}
-                <div className="w-10/12 bg-bgMainColor">
+                <div className="bg-bgMainColor w-full md:w-10/12 ml-20 md:ml-0">
                     {children}
                 </div>
             </div>
