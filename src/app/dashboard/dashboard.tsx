@@ -17,6 +17,7 @@ import {
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
 import MemberDetails from "./[memberId]/page";
+import { AuthService } from "@/services/authentication-service";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -144,12 +145,25 @@ const Dashboard = () => {
             },
         ],
     };
+    
+    // Saving auth token for authentication.
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("code");
+        if (token) {
+          AuthService.saveToken(token);
+          console.log("Saved ", token)
+          window.history.replaceState({}, document.title, "/dashboard"); // Clean URL
+        }
+      }, []);
 
     useEffect(() => {
         fetchAttendanceCount();
         fetchMemberSummary();
     }, [selectedDate]);
 
+
+      
     const formatDate = (date: Date): string => {
         const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" };
         return date.toLocaleDateString("en-US", options);
