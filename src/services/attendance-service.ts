@@ -9,24 +9,25 @@ import {
 } from "@/types/types";
 
 const GET_ATTENDANCE_DETAILS_QUERY = gql`
-  query getAttendance($date: String!) {
-    getAttendance(date: $date) {
-      id
-      timein
-      timeout
+
+  query 
+  {attendanceByDate(date : "2025-01-01"){
+      # attendance
+      timeIn
+      timeOut
       date
       isPresent
-    }
-  }
+    }}
 `;
 
 const GET_MEMBER_DETAILS_QUERY = gql`
-  query {
-    getMember {
-      id
+
+    query {
+    members {
+     memberId
       name
       year
-    }
+    } 
   }
 `;
 
