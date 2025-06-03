@@ -29,7 +29,7 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                     {titles.map((title: string, index: number) => (
                         <div
                             key={index}
-                            className="w-1/5 min-w-[8.5rem] p-2 text-center"
+                            className={`w-1/5 min-w-[8.5rem] p-2 text-center ${index === 0 ? "basis-2/5 text-start px-4" : "basis-1/5"}`}
                         >
                             {title}
                         </div>
@@ -49,21 +49,21 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                             aria-label={`Attendance record for ${attendance.name}`}
                         >
                             <div
-                                className="min-w-[8.5rem] px-4 w-1/5 truncate text-left"
+                                className="min-w-[8.5rem] basis-2/5 px-4 truncate text-left"
                                 title={attendance.name}
                             >
-                                {truncate(attendance.name, 12)}
+                                {truncate(attendance.name, 30)}
                             </div>
-                            <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
+                            <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
                                 {attendance.year}
                             </div>
 
                             {complete && (
                                 <>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
+                                    <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
                                         {attendance.timeIn?.substring(0, 8) || "N/A"}
                                     </div>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
+                                    <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
                                         {attendance.timeOut?.substring(0, 8) || "N/A"}
                                     </div>
                                 </>
