@@ -1,5 +1,7 @@
 // Type for the AttendanceDetails object returned by the query
 export type AttendanceDetails = {
+  name: any;
+  memberId: any;
   id: string;
   timein: string;
   timeout: string;
@@ -7,6 +9,16 @@ export type AttendanceDetails = {
   date: string;
   memberName: string;
   year: string;
+};
+
+//Saperate type for the same AttendanceDetailsMouli
+export type AttendanceDetailsMouli = {
+  memberId: string;
+  name: string;
+  year: string;
+  timeIn: any;
+  timeOut: any;
+  isPresent: boolean;
 };
 
 // Type for the Member object
@@ -27,6 +39,10 @@ export type Attendance = {
 // Type for the GraphQL Query response for attendance details
 export type GetAttendanceDetailsQueryResponse = {
   getAttendance: AttendanceDetails[];
+};
+
+export type GetAttendanceDetailsQueryResponseMouli = {
+  attendanceByDate: AttendanceDetailsMouli[];
 };
 
 export type GetMemberDetailsQueryResponse = {

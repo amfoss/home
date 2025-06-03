@@ -1,23 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { AttendanceDetails } from "@/types/types";
+import { AttendanceDetails, AttendanceDetailsMouli } from "@/types/types";
 import { AttendanceDetailRow } from "@/components/attendance-track/AttendanceDetails";
 import { AttendanceService } from "@/services/attendance-service"; // Ensure the service is imported
 
 export const AttendancePage: React.FC = () => {
   // State for attendance data
-  const [attendanceData, setAttendanceData] = useState<AttendanceDetails[]>([]);
+  const [attendanceData, setAttendanceData] = useState<AttendanceDetailsMouli[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const attendanceListTitle = [
     "Name",
     "Year",
-    "Date",
     "In Time",
     "Out Time",
-
   ];
   // const absentListTitle = [
   //   "Name",
@@ -40,11 +38,11 @@ export const AttendancePage: React.FC = () => {
         const [day, month, year] = today.split('/');
         const date = `${year}-${month}-${day}`; // 'YYYY-MM-DD' format
 
-        const data = await AttendanceService.getAttendanceDetails(date);
+        const data = await AttendanceService.getAttendanceDetails("2025-06-02");
         setAttendanceData(data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch attendance data' + err);
+        setError('Failed to fetch attendance data ' + err);
         setLoading(false);
       }
     };

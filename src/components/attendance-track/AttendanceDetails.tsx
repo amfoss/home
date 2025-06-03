@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { AttendanceDetails } from "@/types/types";
+import { AttendanceDetailsMouli } from "@/types/types";
 
 type AttendanceDetailRowProps = {
     titles: string[];
     loading: boolean;
     error: string | null;
-    attendanceData: AttendanceDetails[];
+    attendanceData: AttendanceDetailsMouli[];
     complete: boolean;
 };
 
@@ -46,13 +46,13 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                             className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent ? "text-offWhite" : "text-red-500"
                                 }`}
                             key={index}
-                            aria-label={`Attendance record for ${attendance.memberName}`}
+                            aria-label={`Attendance record for ${attendance.name}`}
                         >
                             <div
                                 className="min-w-[8.5rem] px-4 w-1/5 truncate text-left"
-                                title={attendance.memberName}
+                                title={attendance.name}
                             >
-                                {truncate(attendance.memberName, 12)}
+                                {truncate(attendance.name, 12)}
                             </div>
                             <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
                                 {attendance.year}
@@ -61,13 +61,10 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                             {complete && (
                                 <>
                                     <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.date || "N/A"}
+                                        {attendance.timeIn?.substring(0, 8) || "N/A"}
                                     </div>
                                     <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.timein?.substring(0, 8) || "N/A"}
-                                    </div>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.timeout?.substring(0, 8) || "N/A"}
+                                        {attendance.timeOut?.substring(0, 8) || "N/A"}
                                     </div>
                                 </>
                             )}
