@@ -93,4 +93,25 @@ export const DashboardService = {
       throw new Error("Could not fetch member summary data");
     }
   },
+
+    // Dummy implementation for attendance counts
+  async getAttendanceCounts(
+    startDate: string,
+    endDate: string
+  ): Promise<{ date: string; count: number }[]> {
+    // Generate 7 days of dummy data
+    const start = new Date(startDate);
+    const result: { date: string; count: number }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      result.push({
+        date: d.toISOString().split("T")[0],
+        count: Math.floor(Math.random() * 10) + 1, // random count between 1 and 10
+      });
+    }
+    return result;
+  },
+
+
 };
