@@ -49,7 +49,7 @@ amFOSS Home is the central dashboard for the amFOSS community, helping track, ma
 
 # How It Works
 
-- The **frontend** (this repo) is what users see and interact with in their browser.
+- The **frontend** [home](https://home.amfoss.in) is what users see and interact with in their browser.
 - The **backend** (Rust, [amfoss/root](https://github.com/amfoss/root)) handles all the data, logic, and storage.
 - The frontend gets all its data by sending GraphQL queries and mutations to the backend at [https://root.amfoss.in/graphiql](https://root.amfoss.in/graphiql).
 
