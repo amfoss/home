@@ -6,6 +6,9 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  Title,
+  Tooltip,
+  Legend,
   TimeScale,
   RadialLinearScale,
 } from "chart.js";
@@ -18,6 +21,9 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
+  Title,
+  Tooltip,
+  Legend
 );
 
 import { AttendanceDetails, AttendanceDetailsMouli } from "@/types/types";
@@ -67,73 +73,13 @@ export const AttendancePage: React.FC = () => {
   const absentMembers = attendanceData.filter((member) => !member.isPresent);
   const lateMembers = attendanceData.filter(
     (member) => member.isPresent && member.timeIn > "17:30:00"
-  );
+  ); // Assuming 10:00 AM is the cutoff for being late
   const filteredData = [...presentMembers, ...absentMembers];
   const onTimeMembers = attendanceData.filter(
     (member) => member.isPresent && member.timeIn === "17:30:00"
   );
-  const earlyMembers = attendanceData.filter(
+  const EarlyMembers = attendanceData.filter(
     (member) => member.isPresent && member.timeIn < "17:30:00"
-  );
-
-  // Yearwise members
-  const firstYears = attendanceData.filter((members) => members.year === "1");
-  const secondYears = attendanceData.filter((members) => members.year === "2");
-  const thirdYears = attendanceData.filter((members) => members.year === "3");
-  const fourthYears = attendanceData.filter((members) => members.year === "4");
-
-  // Yearwise present members
-  const firstYearPresent = firstYears.filter((members) => members.isPresent);
-  const secondYearPresent = secondYears.filter((members) => members.isPresent);
-  const thirdYearPresent = thirdYears.filter((members) => members.isPresent);
-  const fourthYearPresent = fourthYears.filter((members) => members.isPresent);
-
-  // Yearwise absent members
-  const firstYearAbsent = firstYears.filter((members) => !members.isPresent);
-  const secondYearAbsent = secondYears.filter((members) => !members.isPresent);
-  const thirdYearAbsent = thirdYears.filter((members) => !members.isPresent);
-  const fourthYearAbsent = fourthYears.filter((members) => !members.isPresent);
-
-  // Yearwise late members
-  const firstYearLate = firstYears.filter(
-    (members) => members.isPresent && members.timeIn > "17:30:00"
-  );
-  const secondYearLate = secondYears.filter(
-    (members) => members.isPresent && members.timeIn > "17:30:00"
-  );
-  const thirdYearLate = thirdYears.filter(
-    (members) => members.isPresent && members.timeIn > "17:30:00"
-  );
-  const fourthYearLate = fourthYears.filter(
-    (members) => members.isPresent && members.timeIn > "17:30:00"
-  );
-
-  // Yearwise on time members
-  const firstYearOnTime = firstYears.filter(
-    (members) => members.isPresent && members.timeIn === "17:30:00"
-  );
-  const secondYearOnTime = secondYears.filter(
-    (members) => members.isPresent && members.timeIn === "17:30:00"
-  );
-  const thirdYearOnTime = thirdYears.filter(
-    (members) => members.isPresent && members.timeIn === "17:30:00"
-  );
-  const fourthYearOnTime = fourthYears.filter(
-    (members) => members.isPresent && members.timeIn === "17:30:00"
-  );
-
-  // Yearwise early members
-  const firstYearEarly = firstYears.filter(
-    (members) => members.isPresent && members.timeIn < "17:30:00"
-  );
-  const secondYearEarly = secondYears.filter(
-    (members) => members.isPresent && members.timeIn < "17:30:00"
-  );
-  const thirdYearEarly = thirdYears.filter(
-    (members) => members.isPresent && members.timeIn < "17:30:00"
-  );
-  const fourthYearEarly = fourthYears.filter(
-    (members) => members.isPresent && members.timeIn < "17:30:00"
   );
 
   return (
@@ -161,30 +107,13 @@ export const AttendancePage: React.FC = () => {
                   labels: ["Present", "Absent", "Late", "On Time", "Early"],
                   datasets: [
                     {
-                      label: "First Years",
+                      label: "My First Dataset",
                       data: [
-                        firstYearPresent.length,
-                        firstYearAbsent.length,
-                        firstYearLate.length,
-                        firstYearOnTime.length,
-                        firstYearEarly.length,
-                      ],
-                      fill: true,
-                      backgroundColor: "rgba(255, 99, 132, 0.2)",
-                      borderColor: "rgb(255, 99, 132)",
-                      pointBackgroundColor: "rgb(255, 99, 132)",
-                      pointBorderColor: "#fff",
-                      pointHoverBackgroundColor: "#fff",
-                      pointHoverBorderColor: "rgb(255, 99, 132)",
-                    },
-                    {
-                      label: "Second Years",
-                      data: [
-                        secondYearPresent.length,
-                        secondYearAbsent.length,
-                        secondYearLate.length,
-                        secondYearOnTime.length,
-                        secondYearEarly.length,
+                        presentMembers.length,
+                        absentMembers.length,
+                        lateMembers.length,
+                        onTimeMembers.length,
+                        EarlyMembers.length,
                       ],
                       fill: true,
                       backgroundColor: "rgba(54, 162, 235, 0.2)",
@@ -193,40 +122,6 @@ export const AttendancePage: React.FC = () => {
                       pointBorderColor: "#fff",
                       pointHoverBackgroundColor: "#fff",
                       pointHoverBorderColor: "rgb(54, 162, 235)",
-                    },
-                    {
-                      label: "Third Years",
-                      data: [
-                        thirdYearPresent.length,
-                        thirdYearAbsent.length,
-                        thirdYearLate.length,
-                        thirdYearOnTime.length,
-                        thirdYearEarly.length,
-                      ],
-                      fill: true,
-                      backgroundColor: "rgba(255, 206, 86, 0.2)",
-                      borderColor: "rgb(255, 206, 86)",
-                      pointBackgroundColor: "rgb(255, 206, 86)",
-                      pointBorderColor: "#fff",
-                      pointHoverBackgroundColor: "#fff",
-                      pointHoverBorderColor: "rgb(255, 206, 86)",
-                    },
-                    {
-                      label: "Fourth Years",
-                      data: [
-                        fourthYearPresent.length,
-                        fourthYearAbsent.length,
-                        fourthYearLate.length,
-                        fourthYearOnTime.length,
-                        fourthYearEarly.length,
-                      ],
-                      fill: true,
-                      backgroundColor: "rgba(75, 192, 192, 0.2)",
-                      borderColor: "rgb(75, 192, 192)",
-                      pointBackgroundColor: "rgb(75, 192, 192)",
-                      pointBorderColor: "#fff",
-                      pointHoverBackgroundColor: "#fff",
-                      pointHoverBorderColor: "rgb(75, 192, 192)",
                     },
                   ],
                 }}
