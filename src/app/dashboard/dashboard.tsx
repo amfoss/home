@@ -23,6 +23,21 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const Dashboard = () => {
     const router = useRouter();
 
+    const [lowCountData] = useState<{ name: string; attended: number; missed: number }[]>([
+    { name: "Jagadeesh", attended: 2, missed: 5 },
+    { name: "Nishtha", attended: 1, missed: 6 },
+    { name: "Rohit", attended: 4, missed: 3 },
+    { name: "Karthik", attended: 2, missed: 5 },
+    { name: "Sravan", attended: 3, missed: 4 },
+    { name: "Teja sai", attended: 1, missed: 6 },
+    { name: "Malavika", attended: 4, missed: 3 },
+    { name: "Anandajith", attended: 2, missed: 5 },
+    { name: "kushal", attended: 3, missed: 4 },
+    { name: "Naveen", attended: 3, missed: 4 },
+    { name: "Mouli", attended: 3, missed: 4 },
+
+    ]);
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [attendanceData, setAttendanceData] = useState<number[]>([]);
     const [labels, setLabels] = useState<string[]>([]);
@@ -61,7 +76,7 @@ const Dashboard = () => {
             });
 
             allDates.forEach((date) => {
-                const entry = dailyAttendance.find((att) => att.date === date);
+                const entry = dailyAttendance.find((att: { date: string; count: number}) => att.date === date);
                 dateLabels.push(new Date(date).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
@@ -255,7 +270,7 @@ const Dashboard = () => {
                                 <hr className="border-t border-white mt-2" />
 
                                 {/*need to add query for getting people with least numbers*/}
-                                <p className="text-center p-2 text-red-500"> No data available</p>
+                                {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
                                 {/* data.map((item, index) => (
                                 <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
                                     <div className="px-5">{item.name}</div>
@@ -263,6 +278,18 @@ const Dashboard = () => {
                                     <div className="pl-5">{item.missed}</div>
                                 </div>
                                 ))} */}
+                                {lowCountData.length === 0 ? (
+                                <p className="text-center p-2 text-red-500"> No data available</p>
+                            ) : (
+                                lowCountData.map((item, index) => (
+                                    <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
+                                        <div className="px-5">{item.name}</div>
+                                        <div className="pl-5">{item.attended}</div>
+                                        <div className="pl-5">{item.missed}</div>
+                                    </div>
+                                ))
+                            )}
+                                
                             </div>
                         </CardContent>
                     </Card>
@@ -319,7 +346,7 @@ const Dashboard = () => {
                         <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[500px] md:overflow-x-hidden">
                             <div className="grid grid-cols-4 items-center w-full text-white font-bold py-2 overflow-x-scroll">
                                 <div className="text-left px-10">Members</div>
-                                <div className="text-center ">Active Projects</div>
+                                {/* <div className="text-center ">Active Projects</div> */}
                                 <div className="text-center">Attendance</div>
                                 <div className="text-right px-10">Status Updates</div>
                             </div>
@@ -335,7 +362,7 @@ const Dashboard = () => {
 
                                 >
                                     <div className="text-left px-10">{item.name}</div>
-                                    <div className="text-center">{item.projects}</div>
+                                    {/* <div className="text-center">{item.projects}</div> */}
                                     <div className="text-center">{item.attendanceMonth}</div>
                                     <div className="text-right px-10">{item.statusStreak}</div>
                                 </div>
