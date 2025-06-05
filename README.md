@@ -86,11 +86,24 @@ You can use the GraphiQL interface at [https://root.amfoss.in/graphiql](https://
     yarn dev
     ```
 
-4. **Proxy API requests to the backend:**
+4. **API Proxying (Development Only):**
+
+    By default, the frontend expects the backend GraphQL API to be available at `https://root.amfoss.in`.  
+    If you need to proxy API requests locally (for example, if you are developing against a local backend instance), you can use a tool like [`lcp`](https://www.npmjs.com/package/lcp).  
+    **Note:** `lcp` is not installed by default. Install it globally if you need this feature:
+
+    ```sh
+    npm install -g lcp
+    ```
+
+    Then run:
+
     ```sh
     npx lcp --proxyUrl https://root.amfoss.in
     ```
-    This command will proxy your local frontend to the backend API, so you don't need to set up a `.env` file for the GraphQL endpoint.
+
+    This is a temporary solution until backend seeding is available in Root.  
+    If you do not need a proxy, you can skip this step.
 
 5. **Open the app:**
     - Go to [http://localhost:3000](http://localhost:3000) in your browser.
