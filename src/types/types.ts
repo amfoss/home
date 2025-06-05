@@ -32,18 +32,27 @@ export type GetAttendanceDetailsQueryResponse = {
 export type GetMemberDetailsQueryResponse = {
   getMember: Member[];
 };
-// Represents the basic details of a member
+
+// Represents the basic details of a member (aligned with dashboard.tsx)
 export interface MemberDetails {
-  id: string; // Unique identifier for the member
-  name: string; // Name of the member
-  year: string; // Year associated with the member (e.g., "Senior", "Junior")
+  memberId: string; // Changed from id to memberId to match dashboard.tsx
+  name: string;
+  streak?: {
+    maxStreak: number;
+    currentStreak: number;
+  };
+  year?: string;
+  email?: string;
+  joinDate?: string;
+  role?: string;
 }
 
-// Represents enriched data for each member
-export interface EnrichedMemberData extends MemberDetails {
-  statusStreak: number; // Current status streak of the member
-  maxStatusStreak: number; // Maximum status streak achieved by the member
-  projects: string[]; // List of project titles associated with the member
-  attendanceStreak: number; // Attendance streak for a given period
-  attendanceMonth: string; // Month for which the attendance streak applies
+// Represents enriched data for each member (aligned with dashboard.tsx)
+export interface EnrichedMemberData {
+  id: string;
+  name: string;
+  year: string;
+  statusStreak: number;
+  maxStatusStreak: number;
+  projects: string[];
 }

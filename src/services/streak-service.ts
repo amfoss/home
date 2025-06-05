@@ -1,78 +1,37 @@
-"use client";
-
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
 import { MemberDetails, EnrichedMemberData } from "@/types/types";
 
+// GraphQL query to fetch members with their streak info
 const GET_MEMBERS_QUERY = gql`
-  query {
-    getMember {
-      id
+  query my_query {
+    members {
+      memberId
       name
       year
-    }
-  }
-`;
-
-const GET_STATUS_STREAK_QUERY = gql`
-  query {
-    getUpdateStreak {
-      id
-      streak
-      maxStreak
-    }
-  }
-`;
-
-const GET_PROJECTS_QUERY = gql`
-  query {
-    getProjects {
-      memberId
-      projectTitle
-    }
-  }
-`;
-
-const GET_ATTENDANCE_SUMMARY_QUERY = gql`
-  query getAttendanceSummary($startDate: String!, $endDate: String!) {
-    getAttendanceSummary(startDate: $startDate, endDate: $endDate) {
-      dailyCount {
-        date
-        count
+      streak {
+        maxStreak
+        currentStreak
       }
-      memberAttendance {
-        id
-        presentDays
-      }
-      maxDays
     }
   }
 `;
+
+// This query is redundant since it fetches the same data as GET_MEMBERS_QUERY
+// Keeping it for structure, but you can remove it if not needed
+// const GET_STATUS_STREAK_QUERY = gql`
+//   query my_query {
+//     members {
+//       memberId
+//       streak {
+//         maxStreak
+//         currentStreak
+//       }
+//     }
+//   }
+// `;
 
 export const DashboardService = {
-  // Function to fetch attendance count by day
-  async getAttendanceCounts(
-    startDate: string,
-    endDate: string
-  ): Promise<{ date: string; count: number }[]> {
-    try {
-      const response = await client.query<{
-        getAttendanceSummary: {
-          dailyCount: { date: string; count: number }[];
-        };
-      }>({
-        query: GET_ATTENDANCE_SUMMARY_QUERY,
-        variables: { startDate, endDate },
-      });
-
-      return response.data.getAttendanceSummary.dailyCount;
-    } catch (error) {
-      console.error("Error fetching attendance count data:", error);
-      throw new Error("Could not fetch attendance count data");
-    }
-  },
-
-  // Function to get enriched member details
   async getMemberSummary(
     startDate: string,
     endDate: string
@@ -82,83 +41,20 @@ export const DashboardService = {
     topStatusUpdate: { memberName: string; statusRatio: string };
   }> {
     try {
-      const [
-        memberResponse,
-        statusStreakResponse,
-        projectsResponse,
-        attendanceSummaryResponse,
-      ] = await Promise.all([
-        client.query<{ getMember: MemberDetails[] }>({
-          query: GET_MEMBERS_QUERY,
-        }),
-        client.query<{
-          getUpdateStreak: { id: string; streak: number; maxStreak: number }[];
-        }>({
-          query: GET_STATUS_STREAK_QUERY,
-        }),
-        client.query<{
-          getProjects: { memberId: string; projectTitle: string }[];
-        }>({
-          query: GET_PROJECTS_QUERY,
-        }),
-        client.query<{
-          getAttendanceSummary: {
-            memberAttendance: { id: string; presentDays: number }[];
-            maxDays: number;
-          };
-        }>({
-          query: GET_ATTENDANCE_SUMMARY_QUERY,
-          variables: { startDate, endDate },
-        }),
-      ]);
-
-      const members = memberResponse.data.getMember;
-      const statusStreaks = statusStreakResponse.data.getUpdateStreak;
-      const projects = projectsResponse.data.getProjects;
-      const attendanceSummary =
-        attendanceSummaryResponse.data.getAttendanceSummary;
-
-      const maxDays = attendanceSummary.maxDays;
-      const memberAttendance = attendanceSummary.memberAttendance;
-
-      const statusMap = new Map(
-        statusStreaks.map((item) => [
-          item.id,
-          { streak: item.streak, maxStreak: item.maxStreak },
-        ])
-      );
-
-      const projectMap = new Map<string, string[]>();
-      projects.forEach((project) => {
-        if (!projectMap.has(project.memberId)) {
-          projectMap.set(project.memberId, []);
-        }
-        projectMap.get(project.memberId)?.push(project.projectTitle);
+      // Fetch members data (streak info is included)
+      const memberResponse = await client.query<{ members: any[] }>({
+        query: GET_MEMBERS_QUERY,
       });
 
-      const attendanceMap = new Map(
-        memberAttendance.map((item) => [item.id, item.presentDays])
-      );
+      const members = memberResponse.data.members;
 
-      let maxAttendanceRatio = 0;
-      let maxAttendanceMembers: string[] = [];
       let maxStatusRatio = 0;
       let maxStatusMembers: string[] = [];
 
-      // Enrich member data
+      // Enrich member data with streak info and calculate top status updater(s)
       const enrichedData: EnrichedMemberData[] = members.map((member) => {
-        const presentDays = attendanceMap.get(member.id) || 0;
-        const attendanceRatio = presentDays / maxDays;
-
-        if (attendanceRatio > maxAttendanceRatio) {
-          maxAttendanceRatio = attendanceRatio;
-          maxAttendanceMembers = [member.name];
-        } else if (attendanceRatio === maxAttendanceRatio) {
-          maxAttendanceMembers.push(member.name);
-        }
-
-        const status = statusMap.get(member.id) || { streak: 0, maxStreak: 0 };
-        const statusRatio = status.streak / (status.maxStreak || 1);
+        const streak = member.streak || { currentStreak: 0, maxStreak: 0 };
+        const statusRatio = streak.currentStreak / (streak.maxStreak || 1);
 
         if (statusRatio > maxStatusRatio) {
           maxStatusRatio = statusRatio;
@@ -168,25 +64,21 @@ export const DashboardService = {
         }
 
         return {
-          id: member.id,
+          id: member.memberId,
           name: member.name,
           year: member.year,
-          statusStreak: status.streak,
-          maxStatusStreak: status.maxStreak,
-          projects: projectMap.get(member.id) || ["N/A"],
-          attendanceStreak: presentDays,
-          attendanceMonth: `${presentDays}/${maxDays}`,
+          statusStreak: streak.currentStreak,
+          maxStatusStreak: streak.maxStreak,
+          projects: [], // Assuming projects are not fetched in this query
         };
       });
 
+      // Attendance summary is not available, so we return "N/A"
       return {
         enrichedData,
         topAttendance: {
-          memberName:
-            maxAttendanceMembers.length > 1
-              ? "a lot of people"
-              : maxAttendanceMembers[0] || "Unknown",
-          attendanceRatio: `${Math.round(maxAttendanceRatio * 100)}%`,
+          memberName: "N/A",
+          attendanceRatio: "N/A",
         },
         topStatusUpdate: {
           memberName:
@@ -201,4 +93,25 @@ export const DashboardService = {
       throw new Error("Could not fetch member summary data");
     }
   },
+
+    // Dummy implementation for attendance counts
+  async getAttendanceCounts(
+    startDate: string,
+    endDate: string
+  ): Promise<{ date: string; count: number }[]> {
+    // Generate 7 days of dummy data
+    const start = new Date(startDate);
+    const result: { date: string; count: number }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      result.push({
+        date: d.toISOString().split("T")[0],
+        count: Math.floor(Math.random() * 10) + 1, // random count between 1 and 10
+      });
+    }
+    return result;
+  },
+
+
 };
