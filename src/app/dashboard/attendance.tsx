@@ -1,4 +1,5 @@
 "use client";
+import Dropdown from "@/components/CalendarDropdown";
 import React, { use, useEffect, useState } from "react";
 import { Chart, ArcElement } from "chart.js";
 Chart.register(ArcElement);
@@ -28,15 +29,16 @@ ChartJS.register(
   Legend
 );
 
-import { AttendanceDetails, AttendanceDetailsMouli } from "@/types/types";
+import { AttendanceDetails, updatedAttendanceDetails } from "@/types/types";
 import { AttendanceDetailRow } from "@/components/attendance-track/AttendanceDetails";
 import { AttendanceService } from "@/services/attendance-service"; // Ensure the service is imported
 import Calendar from "@/components/Calendar";
+import App from "@/components/CalendarDropdown";
 
 export const AttendancePage: React.FC = () => {
   // State for attendance data
   const [attendanceData, setAttendanceData] = useState<
-    AttendanceDetailsMouli[]
+    updatedAttendanceDetails[]
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +104,7 @@ export const AttendancePage: React.FC = () => {
 
           {/* Flex container for the two boxes */}
           <div className="flex flex-col lg:flex-col gap-4 lg:w-2/3 lg:h-full w-full lg:ml-5 lg:mt-0 mt-5 md:w-full md:h-56 ">
-            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center h-full">
+            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center h-[400px] w-full">
               {/*TODO: need to implement absentee list.*/}
               <Doughnut
                 data={{
@@ -116,9 +118,14 @@ export const AttendancePage: React.FC = () => {
                         lateMembers.length,
                       ],
                       backgroundColor: [
-                        "rgb(54, 162, 235)",
-                        "rgb(255, 99, 132)",
+                        "rgba(255, 205, 86, 0.2)",
+                        "rgba(255, 99, 132, 0.2)",
+                        "rgba(255, 159, 64, 0.2)",
+                      ],
+                      borderColor: [
                         "rgb(255, 205, 86)",
+                        "rgb(255, 99, 132)",
+                        "rgb(255, 159, 64)",
                       ],
                       hoverOffset: 4,
                     },

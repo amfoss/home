@@ -4,8 +4,8 @@ import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
 import {
   GetAttendanceDetailsQueryResponse,
-  AttendanceDetailsMouli,
-  GetAttendanceDetailsQueryResponseMouli,
+  updatedAttendanceDetails,
+  updatedGetAttendanceDetailsQueryResponse,
 } from "@/types/types";
 
 const GET_ATTENDANCE_DETAILS_QUERY = gql`
@@ -23,10 +23,10 @@ const GET_ATTENDANCE_DETAILS_QUERY = gql`
 
 export const AttendanceService = {
   // Function to get attendance details based on a specific date
-  async getAttendanceDetails(date: string): Promise<AttendanceDetailsMouli[]> {
+  async getAttendanceDetails(date: string): Promise<updatedAttendanceDetails[]> {
     try {
       const [attendanceResponse] = await Promise.all([
-        client.query<GetAttendanceDetailsQueryResponseMouli>({
+        client.query<updatedGetAttendanceDetailsQueryResponse>({
           query: GET_ATTENDANCE_DETAILS_QUERY,
           variables: { date },
         }),

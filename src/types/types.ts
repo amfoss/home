@@ -11,8 +11,8 @@ export type AttendanceDetails = {
   year: string;
 };
 
-//Saperate type for the same AttendanceDetailsMouli
-export type AttendanceDetailsMouli = {
+//Saperate type for the same updatedAttendanceDetails
+export type updatedAttendanceDetails = {
   memberId: string;
   name: string;
   year: string;
@@ -41,8 +41,8 @@ export type GetAttendanceDetailsQueryResponse = {
   getAttendance: AttendanceDetails[];
 };
 
-export type GetAttendanceDetailsQueryResponseMouli = {
-  attendanceByDate: AttendanceDetailsMouli[];
+export type updatedGetAttendanceDetailsQueryResponse = {
+  attendanceByDate: updatedAttendanceDetails[];
 };
 
 export type GetMemberDetailsQueryResponse = {
