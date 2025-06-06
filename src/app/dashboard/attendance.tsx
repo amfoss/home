@@ -1,5 +1,4 @@
 "use client";
-import Dropdown from "@/components/CalendarDropdown";
 import React, { use, useEffect, useState } from "react";
 import { Chart, ArcElement } from "chart.js";
 Chart.register(ArcElement);
@@ -33,7 +32,6 @@ import { AttendanceDetails, updatedAttendanceDetails } from "@/types/types";
 import { AttendanceDetailRow } from "@/components/attendance-track/AttendanceDetails";
 import { AttendanceService } from "@/services/attendance-service"; // Ensure the service is imported
 import Calendar from "@/components/Calendar";
-import App from "@/components/CalendarDropdown";
 
 export const AttendancePage: React.FC = () => {
   // State for attendance data
