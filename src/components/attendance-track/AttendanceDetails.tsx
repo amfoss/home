@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { AttendanceDetailsMouli } from "@/types/types";
+import { updatedAttendanceDetails } from "@/types/types";
 
 type AttendanceDetailRowProps = {
     titles: string[];
     loading: boolean;
     error: string | null;
-    attendanceData: AttendanceDetailsMouli[];
+    attendanceData: updatedAttendanceDetails[];
     complete: boolean;
 };
 
