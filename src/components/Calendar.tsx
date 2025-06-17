@@ -7,8 +7,9 @@ interface CalendarProps {
 
 const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
   const currentYear = new Date().getFullYear();
+  const initialYear = 2024;
   const years = [];
-  for (let i = currentYear; i >= currentYear - 5; i--) {
+  for (let i = currentYear; i >= initialYear; i--) {
     years.push(i);
   }
   const [month, setMonth] = useState(new Date().getMonth());
@@ -167,10 +168,10 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
               name={monthMap[currentDate.getMonth()]}
               value={month}
               onChange={handleSelectMonth}
-              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none "
+              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none bg-transparent appearance-none "
             >
               {monthValues.map((month, index) => (
-                <option key={month} value={index}>
+                <option key={month} value={index} >
                   {month}
                 </option>
               ))}
@@ -179,7 +180,7 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
               name={currentDate.getFullYear().toString()}
               value={year}
               onChange={handleSelectYear}
-              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none"
+              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none appearance-none"
             >
               {years.map((year, index) => (
                 <option key={index} value={year}>
