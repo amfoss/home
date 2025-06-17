@@ -2,26 +2,39 @@
 
 import React, { useState, useEffect } from "react";
 import Calendar from "@/components/Calendar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/Card";
 import { ChartLine, Search } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
 import MemberDetails from "./[memberId]/page";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
-    const router = useRouter();
+  const router = useRouter();
 
     const [lowCountData] = useState<{ name: string; attended: number; missed: number }[]>([
     { name: "Jagadeesh", attended: 2, missed: 5 },
@@ -38,17 +51,17 @@ const Dashboard = () => {
 
     ]);
 
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [attendanceData, setAttendanceData] = useState<number[]>([]);
-    const [labels, setLabels] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selected, setSelected] = useState<string>("attendance");
-    const [memberSummary, setMemberSummary] = useState<{
-        enrichedData: any[];
-        topAttendance: { memberName: string; attendanceRatio: string };
-        topStatusUpdate: { memberName: string; statusRatio: string };
-    } | null>(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [attendanceData, setAttendanceData] = useState<number[]>([]);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string>("attendance");
+  const [memberSummary, setMemberSummary] = useState<{
+    enrichedData: any[];
+    topAttendance: { memberName: string; attendanceRatio: string };
+    topStatusUpdate: { memberName: string; statusRatio: string };
+  } | null>(null);
 
     const fetchAttendanceCount = async () => {
         setLoading(true);
@@ -115,159 +128,171 @@ const Dashboard = () => {
     };
 
 
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: false,
-            },
-            tooltip: {
-                enabled: true,
-            },
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
         },
-        scales: {
-            x: {
-                grid: {
-                    display: false,
-                },
-                ticks: {
-                    color: "#fff",
-                },
-            },
-            y: {
-                grid: {
-                    display: false,
-                },
-                ticks: {
-                    color: "#fff",
-                    stepSize: 1,
-                    max: 50,
-                },
-                beginAtZero: true,
-            },
+        ticks: {
+          color: "#fff",
         },
-    };
+      },
+      y: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#fff",
+          stepSize: 1,
+          max: 50,
+        },
+        beginAtZero: true,
+      },
+    },
+  };
 
-    const chartData = {
-        labels,
-        datasets: [
-            {
-                data: loading ? new Array(7).fill(0) : attendanceData,
-                backgroundColor: "rgba(229, 172, 0, 0.6)",
-                borderColor: "#FEC108",
-                borderWidth: 1,
-            },
-        ],
-    };
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        data: loading ? new Array(7).fill(0) : attendanceData,
+        backgroundColor: "rgba(229, 172, 0, 0.6)",
+        borderColor: "#FEC108",
+        borderWidth: 1,
+      },
+    ],
+  };
 
     useEffect(() => {
         fetchAttendanceCount();
         fetchMemberSummary();
     }, [selectedDate]);
 
-    const formatDate = (date: Date): string => {
-        const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" };
-        return date.toLocaleDateString("en-US", options);
+  const formatDate = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     };
+    return date.toLocaleDateString("en-US", options);
+  };
 
-    const navigateToMemberDetails = (member: MemberDetails) => {
-        router.push(`/dashboard/${member.id}`);
-    };
+  const navigateToMemberDetails = (member: MemberDetails) => {
+    router.push(`/dashboard/${member.id}`);
+  };
 
-    const getDateRange = (date: Date, range: number) => {
-        const startDate = new Date(date);
-        startDate.setDate(date.getDate() - range);
-        return `${formatDate(startDate)} - ${formatDate(date)}`;
-    };
+  const getDateRange = (date: Date, range: number) => {
+    const startDate = new Date(date);
+    startDate.setDate(date.getDate() - range);
+    return `${formatDate(startDate)} - ${formatDate(date)}`;
+  };
 
-    const handleDateClick = (date: Date) => {
-        setSelectedDate(date);
-    };
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+  };
 
-    return (
-        <div className="p-2 text-white max-h-screen overflow-scroll">
-            <div className="mx-5"><Calendar onDateClick={handleDateClick} />
-                <div className="mt-5 flex flex-col lg:flex-row  justify-between w-full min-h-64 max-w-full">
-                    <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
-                        <CardHeader
-                            options={
-                                <button className="p-2">
-                                    <ChartLine className="text-xl cursor-pointer" />
-                                </button>
-                            }
-                        >
-                            <CardTitle>
-                                Attendance Summary
-                                <CardDescription>
-                                    From {getDateRange(selectedDate, 7)}
-                                </CardDescription>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {loading ? (
-                                <Bar options={chartOptions} data={{
-                                    ...chartData,
-                                    datasets: [{
-                                        data: new Array(7).fill(0),
-                                        backgroundColor: "rgba(229, 172, 0, 0.6)",
-                                        borderColor: "#FEC108",
-                                        borderWidth: 1,
-                                    }]
-                                }} />
-                            ) : error ? (
-                                <p>{error}</p>
-                            ) : (
-                                <Bar options={chartOptions} data={chartData} />
-                            )}
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
-                        <CardHeader>
-                            <div className="flex justify-between min-w-full">
-                                <CardTitle>
-                                    Low on count
-                                    <CardDescription className="mt-2">
-                                        From {getDateRange(selectedDate, 30)}
-                                    </CardDescription>
-                                </CardTitle>
-                                <div className="relative flex items-center justify-between w-44 h-8 bg-bgMainColor rounded-2xl px-2 min-w-fit">
-                                    {/* Highlighter */}
-                                    <div
-                                        className={`absolute top-0 left-0 h-8  bg-yellow-400 rounded-2xl opacity-30 transition-transform duration-500`}
-                                        style={{
-                                            width: selected === "attendance" ? "5rem" : "6rem",
-                                            transform: selected === "attendance" ? "translateX(0)" : "translateX(5rem)",
-                                        }}
-                                    />
+  return (
+    <div className="p-2 text-white max-h-screen overflow-scroll">
+      <div className="mx-5">
+        <Calendar onDateClick={handleDateClick} />
+        <div className="mt-5 flex flex-col lg:flex-row  justify-between w-full min-h-64 max-w-full">
+          <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
+            <CardHeader
+              options={
+                <button className="p-2">
+                  <ChartLine className="text-xl cursor-pointer" />
+                </button>
+              }
+            >
+              <CardTitle>
+                Attendance Summary
+                <CardDescription>
+                  From {getDateRange(selectedDate, 7)}
+                </CardDescription>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Bar
+                  options={chartOptions}
+                  data={{
+                    ...chartData,
+                    datasets: [
+                      {
+                        data: new Array(7).fill(0),
+                        backgroundColor: "rgba(229, 172, 0, 0.6)",
+                        borderColor: "#FEC108",
+                        borderWidth: 1,
+                      },
+                    ],
+                  }}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <Bar options={chartOptions} data={chartData} />
+              )}
+            </CardContent>
+          </Card>
+          <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
+            <CardHeader>
+              <div className="flex justify-between min-w-full">
+                <CardTitle>
+                  Low on count
+                  <CardDescription className="mt-2">
+                    From {getDateRange(selectedDate, 30)}
+                  </CardDescription>
+                </CardTitle>
+                <div className="relative flex items-center justify-between w-44 h-8 bg-bgMainColor rounded-2xl px-2 min-w-fit">
+                  {/* Highlighter */}
+                  <div
+                    className={`absolute top-0 left-0 h-8  bg-yellow-400 rounded-2xl opacity-30 transition-transform duration-500`}
+                    style={{
+                      width: selected === "attendance" ? "5rem" : "6rem",
+                      transform:
+                        selected === "attendance"
+                          ? "translateX(0)"
+                          : "translateX(5rem)",
+                    }}
+                  />
 
-                                    {/* Attendance Option */}
-                                    <div
-                                        className={`text-white flex-1 text-xs font-medium cursor-pointer relative z-10`}
-                                        onClick={() => setSelected("attendance")}
-                                    >
-                                        Attendance
-                                    </div>
+                  {/* Attendance Option */}
+                  <div
+                    className={`text-white flex-1 text-xs font-medium cursor-pointer relative z-10`}
+                    onClick={() => setSelected("attendance")}
+                  >
+                    Attendance
+                  </div>
 
-                                    {/* Status Updates Option */}
-                                    <div
-                                        className={`text-white ml-3 text-xs font-medium cursor-pointer relative z-10`}
-                                        onClick={() => setSelected("status")}
-                                    >
-                                        Status Updates
-                                    </div>
-                                </div>
+                  {/* Status Updates Option */}
+                  <div
+                    className={`text-white ml-3 text-xs font-medium cursor-pointer relative z-10`}
+                    onClick={() => setSelected("status")}
+                  >
+                    Status Updates
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-48 overflow-y-scroll">
+                <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
+                  <div className="px-5">Name</div>
+                  <div className="pl-5">Attended</div>
+                  <div className="pl-5">Missed</div>
+                </div>
 
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="w-full h-48 overflow-y-scroll">
-                                <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
-                                    <div className="px-5">Name</div>
-                                    <div className="pl-5">Attended</div>
-                                    <div className="pl-5">Missed</div>
-                                </div>
-
-                                <hr className="border-t border-white mt-2" />
+                <hr className="border-t border-white mt-2" />
 
                                 {/*need to add query for getting people with least numbers*/}
                                 {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
@@ -351,8 +376,7 @@ const Dashboard = () => {
                                 <div className="text-right px-10">Status Updates</div>
                             </div>
 
-                            <hr className="border-t border-gray-600" />
-
+              <hr className="border-t border-gray-600" />
 
                             {memberSummary?.enrichedData.map((item, index) => (
                                 <div
