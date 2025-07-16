@@ -2,7 +2,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: "https://root.amfoss.in",
+  uri: "http://localhost:8010/proxy",
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {

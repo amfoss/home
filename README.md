@@ -1,9 +1,35 @@
-<div align="center">
-  <h1>amFOSS Home</h1>
-  <p>A full-stack web application for managing and visualizing amFOSS club member activity</p>
-</div>
+<p align="center">
+  <img src="public/Home-pixelated-image.png" width="400" alt="HOME Logo" />
+</p>
+  
+<p align='center'>A full-stack web application for managing and visualizing amFOSS club member activity</p>
 
----
+
+<p align="center">
+  <a href="https://github.com/amfoss/root">
+    <img src="https://img.shields.io/badge/API-GraphQL-%23e10098?logo=graphql&logoColor=white" alt="GraphQL" />
+  </a>
+  <a href="https://github.com/amfoss/home">
+    <img src="https://img.shields.io/badge/Web-Next.js-orange" alt="Web App" />
+  </a>
+  <a href="https://developers.netlify.com/guides/generating-personal-access-tokens-with-netlify-oauth/">
+    <img src="https://img.shields.io/badge/OAuth-Netlify-00c7b7?logo=netlify&logoColor=white" alt="Netlify" />
+  </a>
+  <a href="https://vercel.com/">
+    <img src="https://img.shields.io/badge/OAuth-Vercel-000000?logo=vercel&logoColor=white" alt="Vercel" />
+    <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app">
+    <img src="https://img.shields.io/badge/OAuth-GitHub-181717?logo=github&logoColor=white" alt="Vercel" />
+  </a>
+  <a href="https://deepwiki.com/amfoss/home">
+    <img src="https://img.shields.io/badge/Docs-DeepWiki-blueviolet" alt="Docs" />
+  </a>
+  <a href="#Contributing">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions Welcome" />
+  </a>
+</p>
+
+
+## Overview
 
 amFOSS Home is the central dashboard for the amFOSS community, helping track, manage, and visualize member attendance, status updates, and other key activities. It is designed to work seamlessly with our [Rust backend](https://github.com/amfoss/root), providing a modern, interactive interface for both members and administrators. All data is fetched and updated via a GraphQL API.
 
@@ -45,7 +71,7 @@ amFOSS Home is the central dashboard for the amFOSS community, helping track, ma
   - [Rust](https://www.rust-lang.org/)  
   - [GraphQL API](https://root.amfoss.in/graphiql) ([see and test queries here](https://root.amfoss.in/graphiql))
 
----
+<img width="1358" alt="Home LLM" src="public/Home_LLM.png" />
 
 # How It Works
 
@@ -108,37 +134,16 @@ You can use the GraphiQL interface at [https://root.amfoss.in/graphiql](https://
 5. **Open the app:**
     - Go to [http://localhost:3000](http://localhost:3000) in your browser.
 
+
+<img width="1358" alt="Home Structure" src="public/Get_Start.png" />
+
 ---
 
 # Project Structure
 
-Below is a typical directory structure for this project (as shown by the `tree` command):
+Below is a typical directory structure for this project:
 
-```
-home/
-├── node_modules/
-├── public/
-│   └── ...static assets...
-├── src/
-│   ├── app/
-│   │   └── dashboard/
-│   │       └── dashboard.tsx
-│   ├── components/
-│   │   ├── Calendar.tsx
-│   │   ├── Card.tsx
-│   │   └── ...other components...
-│   ├── lib/
-│   │   └── apollo-client.ts
-│   ├── services/
-│   │   └── streak-service.ts
-│   └── types/
-│       └── types.ts
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── README.md
-└── tsconfig.json
-```
+<img width="1358" alt="Home Structure" src="public/Home_Structure.png" />
 
 ---
 
@@ -198,4 +203,3 @@ If you'd like to fix a bug, add a feature, or improve code quality:
 This project is licensed under the MIT License .
 
 ---
-
