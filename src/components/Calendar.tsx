@@ -168,7 +168,7 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
               name={monthMap[currentDate.getMonth()]}
               value={month}
               onChange={handleSelectMonth}
-              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none bg-transparent appearance-none "
+              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none bg-transparent"
             >
               {monthValues.map((month, index) => (
                 <option key={month} value={index} >
@@ -180,7 +180,7 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
               name={currentDate.getFullYear().toString()}
               value={year}
               onChange={handleSelectYear}
-              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none appearance-none"
+              className="bg-panelButtonColor text-primaryYellow rounded-md outline-none"
             >
               {years.map((year, index) => (
                 <option key={index} value={year}>

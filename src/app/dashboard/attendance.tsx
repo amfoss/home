@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import { Chart, ArcElement } from "chart.js";
 Chart.register(ArcElement);
 import {
@@ -28,10 +28,17 @@ ChartJS.register(
   Legend
 );
 
-import { AttendanceDetails, updatedAttendanceDetails } from "@/types/types";
+import { updatedAttendanceDetails } from "@/types/types";
 import { AttendanceDetailRow } from "@/components/attendance-track/AttendanceDetails";
 import { AttendanceService } from "@/services/attendance-service"; // Ensure the service is imported
 import Calendar from "@/components/Calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/Card";
 
 export const AttendancePage: React.FC = () => {
   // State for attendance data
@@ -43,10 +50,7 @@ export const AttendancePage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const attendanceListTitle = ["Name", "Year", "In Time", "Out Time"];
-  // const absentListTitle = [
-  //   "Name",
-  //   "Year",
-  // ];
+
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
@@ -65,24 +69,66 @@ export const AttendancePage: React.FC = () => {
     fetchAttendanceData();
   }, [selectedDate]);
 
-  useEffect(() => {}, [selectedDate]);
-
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
   };
 
-  const presentMembers = attendanceData.filter((member) => member.isPresent);
+  const timeStringToMS = (timeString: any) => {
+    if (!timeString) return null;
+    const parts = timeString.split(":");
+    const hours = parseInt(parts[0], 10);
+    const min = parseInt(parts[1], 10);
+
+    const secAndmsec = parts[2].split(".");
+    const seconds = parseInt(secAndmsec[0], 10);
+    const milliSeconds = parseInt(secAndmsec[1], 10);
+
+    const timeInMS = (min * 60 + hours * 3600 + seconds) * 1000 + milliSeconds;
+    return timeInMS;
+  };
+
+  const minimumTime = useMemo(() => {
+    if (!attendanceData || attendanceData.length === 0) return null;
+
+    let minTime = Number.MAX_SAFE_INTEGER;
+
+    let foundAtLeastOneValidTime = false;
+
+    for (const member of attendanceData) {
+      const memberTimeInMS = timeStringToMS(member.timeIn);
+      if (memberTimeInMS != null) {
+        if (memberTimeInMS < minTime) minTime = memberTimeInMS;
+      }
+      foundAtLeastOneValidTime = true;
+    }
+    return foundAtLeastOneValidTime ? minTime : null;
+  }, [attendanceData]);
+
+  const time = 30 * 60 * 1000;
+  const lateTime = useMemo(() => {
+    if (!minimumTime) return null;
+    return minimumTime + time;
+  }, [minimumTime, time]);
+
   const absentMembers = attendanceData.filter((member) => !member.isPresent);
+
+  const presentMembers = attendanceData.filter((member) => {
+    if (!member.isPresent) return false;
+    const memberTimeInMs = timeStringToMS(member.timeIn);
+    if (memberTimeInMs === null || lateTime === null) return false;
+    return memberTimeInMs < lateTime;
+  });
+
   const lateMembers = attendanceData.filter(
-    (member) => member.isPresent && member.timeIn > "17:30:00"
-  ); // Assuming 10:00 AM is the cutoff for being late
+    (member) =>{
+    if (!member.isPresent) return false;
+    const memberTimeInMs = timeStringToMS(member.timeIn);
+    if (memberTimeInMs === null || lateTime === null) return false;
+    return memberTimeInMs > lateTime;
+    }
+  );
+
   const filteredData = [...presentMembers, ...absentMembers];
-  const onTimeMembers = attendanceData.filter(
-    (member) => member.isPresent && member.timeIn === "17:30:00"
-  );
-  const EarlyMembers = attendanceData.filter(
-    (member) => member.isPresent && member.timeIn < "17:30:00"
-  );
 
   return (
     <div className="flex overflow-scroll h-screen flex-row  w-full flex-shrink-0 ">
@@ -133,34 +179,50 @@ export const AttendancePage: React.FC = () => {
             </div>
             <div className="flex flex-col bg-panelButtonColor items-center justify-center pb-10 rounded-md h-full w-full">
               {/*need to implement some sorta graph*/}
-              <Bar
-                className=" h-full w-full p-5"
-                data={{
-                  labels: ["Present", "Absent", "Late"],
-                  datasets: [
-                    {
-                      label: "Attendance Statistics",
-                      data: [
-                        presentMembers.length,
-                        absentMembers.length,
-                        lateMembers.length,
-                      ],
-                      backgroundColor: [
-                        "rgba(255, 205, 86, 0.2)",
-                        "rgba(255, 99, 132, 0.2)",
-                        "rgba(255, 159, 64, 0.2)",
-                      ],
-                      borderColor: [
-                        "rgb(255, 205, 86)",
-                        "rgb(255, 99, 132)",
-                        "rgb(255, 159, 64)",
-                      ],
-                      borderWidth: 1,
-                      borderRadius: 5,
-                    },
-                  ],
-                }}
-              ></Bar>
+              <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
+                <CardHeader>
+                  <div className="flex justify-between min-w-full">
+                    <CardTitle>
+                      Low on count
+                      <CardDescription className="mt-2">
+                        {/* From {getDateRange(selectedDate, 30)} */}
+                      </CardDescription>
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="w-full h-48 overflow-y-scroll">
+                    <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
+                      <div className="px-5">Name</div>
+                      <div className="pl-5">Semester</div>
+                      <div className="pl-5">TimeIn</div>
+                    </div>
+
+                    <hr className="border-t border-white mt-2" />
+
+                    {/*need to add query for getting people with least numbers*/}
+                    {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
+                    {/* data.map((item, index) => (
+                                <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
+                                    <div className="px-5">{item.name}</div>
+                                    <div className="pl-5">{item.attended}</div>
+                                    <div className="pl-5">{item.missed}</div>
+                                </div>
+                                ))} */}
+                    {/* {lowCountData.length === 0 ? (
+                                <p className="text-center p-2 text-red-500"> No data available</p>
+                            ) : (
+                                lowCountData.map((item, index) => (
+                                    <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
+                                        <div className="px-5">{item.name}</div>
+                                        <div className="pl-5">{item.attended}</div>
+                                        <div className="pl-5">{item.missed}</div>
+                                    </div>
+                                ))
+                            )} */}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

@@ -196,10 +196,4 @@ If you'd like to fix a bug, add a feature, or improve code quality:
 * Open a draft PR if you'd like feedback on an ongoing contribution.
 * Make sure your pull request targets the correct branch.
 
-
-
-# License
-
-This project is licensed under the MIT License .
-
 ---

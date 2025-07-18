@@ -43,7 +43,9 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                 ) : attendanceData.length > 0 ? (
                     attendanceData.map((attendance, index) => (
                         <div
-                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent ? "text-offWhite" : "text-red-500"
+                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent 
+                                ? "text-offWhite" 
+                                : "text-red-500" 
                                 }`}
                             key={index}
                             aria-label={`Attendance record for ${attendance.name}`}
