@@ -51,7 +51,6 @@ export const AttendancePage: React.FC = () => {
 
   const attendanceListTitle = ["Name", "Year", "In Time", "Out Time"];
 
-
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
@@ -98,8 +97,8 @@ export const AttendancePage: React.FC = () => {
       const memberTimeInMS = timeStringToMS(member.timeIn);
       if (memberTimeInMS != null) {
         if (memberTimeInMS < minTime) minTime = memberTimeInMS;
+        foundAtLeastOneValidTime = true;
       }
-      foundAtLeastOneValidTime = true;
     }
     return foundAtLeastOneValidTime ? minTime : null;
   }, [attendanceData]);
@@ -119,40 +118,40 @@ export const AttendancePage: React.FC = () => {
     return memberTimeInMs < lateTime;
   });
 
-  const lateMembers = attendanceData.filter(
-    (member) =>{
+  const lateMembers = attendanceData.filter((member) => {
     if (!member.isPresent) return false;
     const memberTimeInMs = timeStringToMS(member.timeIn);
     if (memberTimeInMs === null || lateTime === null) return false;
-    return memberTimeInMs > lateTime;
-    }
-  );
+    return memberTimeInMs >= lateTime;
+  });
 
   const filteredData = [...presentMembers, ...absentMembers];
 
   return (
-    <div className="flex overflow-scroll h-screen flex-row  w-full flex-shrink-0 ">
-      <div className="flex flex-col w-full max-h-fit p-5  ">
+    <div className="flex overflow-scroll h-screen w-full mb-5 flex-shrink-0">
+      <div className="flex flex-col w-full max-h-fit p-5">
         <div className=" mx-2 max-h-30 pb-10 ">
           {/* Additional content can go here */}
           <Calendar onDateClick={handleDateClick} />
         </div>
-        <div className="flex flex-col min-h-full lg:flex-row w-full">
-          <AttendanceDetailRow
-            complete={true}
-            titles={attendanceListTitle}
-            loading={loading}
-            attendanceData={filteredData}
-            error={error}
-          />
+        <div className="flex flex-col min-h-full xl:flex-row w-full">
+          <div className="sm:h-[600px] xl:h-full">
+            <AttendanceDetailRow
+              complete={true}
+              titles={attendanceListTitle}
+              loading={loading}
+              attendanceData={filteredData}
+              error={error}
+            />
+          </div>
 
           {/* Flex container for the two boxes */}
-          <div className="flex flex-col lg:flex-col gap-4 lg:w-2/3 lg:h-full w-full lg:ml-5 lg:mt-0 mt-5 md:w-full md:h-56 ">
-            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center h-[400px] w-full">
+          <div className="flex flex-row sm:flex-col md:flex-row xl:flex-col gap-5  xl:h-full xl:ml-5 xl:mt-0 mt-5 w-2/5 md:w-full md:h-full ">
+            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center min-w-64 h-fit xl:h-2/5 xl:w-full w-full">
               {/*TODO: need to implement absentee list.*/}
               <Doughnut
                 data={{
-                  labels: ["Present", "Absent", "Late"],
+                  labels: ["Present OnTime", "Absent", "Late"],
                   datasets: [
                     {
                       label: "Attendance Summary",
@@ -177,53 +176,55 @@ export const AttendancePage: React.FC = () => {
                 }}
               ></Doughnut>
             </div>
-            <div className="flex flex-col bg-panelButtonColor items-center justify-center pb-10 rounded-md h-full w-full">
-              {/*need to implement some sorta graph*/}
-              <Card className="bg-panelButtonColor max-w-full m-2 lg:w-1/2">
-                <CardHeader>
-                  <div className="flex justify-between min-w-full">
-                    <CardTitle>
-                      Low on count
-                      <CardDescription className="mt-2">
-                        {/* From {getDateRange(selectedDate, 30)} */}
-                      </CardDescription>
-                    </CardTitle>
+            {/* <div className=" bg-panelButtonColor min-h-fit rounded-md min-h-3/5 h-full w-full"> */}
+            {/*need to implement some sorta graph*/}
+            <Card className="bg-panelButtonColor  w-full xl:w-full h-fit text-white">
+              <CardHeader>
+                <div>
+                  <CardTitle className="bg-panelButtonColor text-primaryYellow">
+                    Late Entry Log
+                    <CardDescription className="mt-2 mb-1">
+                      Of {selectedDate.toLocaleDateString("en-CA")}
+                    </CardDescription>
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full xl:max-h-96 overflow-y-scroll">
+                  <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
+                    <div className="px-5 basis-2/5">Name</div>
+                    <div className="pl-5 basis-2/5">Year</div>
+                    <div className="pl-5 basis-1/5">TimeIn</div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="w-full h-48 overflow-y-scroll">
-                    <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
-                      <div className="px-5">Name</div>
-                      <div className="pl-5">Semester</div>
-                      <div className="pl-5">TimeIn</div>
-                    </div>
-
-                    <hr className="border-t border-white mt-2" />
-
-                    {/*need to add query for getting people with least numbers*/}
-                    {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
-                    {/* data.map((item, index) => (
-                                <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
-                                    <div className="px-5">{item.name}</div>
-                                    <div className="pl-5">{item.attended}</div>
-                                    <div className="pl-5">{item.missed}</div>
-                                </div>
-                                ))} */}
-                    {/* {lowCountData.length === 0 ? (
-                                <p className="text-center p-2 text-red-500"> No data available</p>
-                            ) : (
-                                lowCountData.map((item, index) => (
-                                    <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
-                                        <div className="px-5">{item.name}</div>
-                                        <div className="pl-5">{item.attended}</div>
-                                        <div className="pl-5">{item.missed}</div>
-                                    </div>
-                                ))
-                            )} */}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <hr className="border-t border-white mt-2" />
+                  {loading ? (
+                    <p className="text-center p-2 text-white"> Loading...</p>
+                  ) : error ? (
+                    <div className="text-center p-4 text-red-500">{error}</div>
+                  ) : lateMembers.length === 0 ? (
+                    <div className="text-center p-4 text-red-500">No Data</div>
+                  ) : (
+                    lateMembers.map((item, index) => (
+                      <div
+                        key={index}
+                        className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full py-2 border-b border-gray-500"
+                      >
+                        <div className="px-5 basis-2/5 text-[#facfa5]">
+                          {item.name}
+                        </div>
+                        <div className="pl-5 basis-2/5 text-[#facfa5]">
+                          {item.year}
+                        </div>
+                        <div className="pl-5 basis-1/5 text-[#facfa5]">
+                          {item.timeIn?.substring(0, 8)}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            {/* </div> */}
           </div>
         </div>
       </div>

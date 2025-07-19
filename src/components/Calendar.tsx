@@ -146,9 +146,15 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
   };
   
   const handleSelectMonth = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setMonth(Number(event?.target?.value));
-    setVisibleDates(generateWeekDates(new Date(year, Number(event?.target?.value), 1), daysToDisplay));
-  };
+    const newMonth = Number(event.target.value);
+    setMonth(newMonth);
+    const newDate = new Date(year, newMonth, currentDate.getDate()); 
+   
+    setCurrentDate(newDate);
+  
+    setVisibleDates(generateWeekDates(newDate, daysToDisplay));
+    onDateClick(newDate);
+};
 
   const handleSelectYear = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setYear(Number(event?.target?.value));
