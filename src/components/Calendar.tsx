@@ -6,10 +6,19 @@ interface CalendarProps {
 }
 
 const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
+    const currentYear = new Date().getFullYear();
+    const initialYear = 2024;
+    const years = [];
+    for (let i = currentYear; i >= initialYear; i--) {
+        years.push(i);
+    }
+    const [month, setMonth] = useState(new Date().getMonth());
+    const [year, setYear] = useState(new Date().getFullYear());
     const monthMap: { [key: number]: string } = {
         0: 'January', 1: 'February', 2: 'March', 3: 'April', 4: 'May', 5: 'June',
         6: 'July', 7: 'August', 8: 'September', 9: 'October', 10: 'November', 11: 'December'
     };
+    const monthValues = Object.values(monthMap);
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     const generateWeekDates = (baseDate: Date, count: number) => {
@@ -29,25 +38,27 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
     const today = new Date();
 
     // Dynamically set the number of visible days based on screen size
-    const updateDaysToDisplay = () => {
-        const width = window.innerWidth;
-        if (width < 430) {
-            setDaysToDisplay(3);
-        }
-        else if (width < 530) {
-            setDaysToDisplay(4);
-        }
-        else if (width < 600) {
-            setDaysToDisplay(5);
-        }
-        else if (width < 690) { // Small screens (sm)
-            setDaysToDisplay(6); // Show 5 days
-        } else if (width < 1024) { // Medium screens (md)
-            setDaysToDisplay(7); // Show 7 days
-        } else { // Large screens (lg)
-            setDaysToDisplay(10); // Show 10 days
-        }
-    };
+     const updateDaysToDisplay = () => {
+    const width = window.innerWidth;
+    if (width < 430) {
+      setDaysToDisplay(3);
+    } else if (width < 530) {
+      setDaysToDisplay(4);
+    } else if (width < 600) {
+      setDaysToDisplay(5);
+    } else if (width < 690) {
+      // Small screens (sm)
+      setDaysToDisplay(6); // Show 5 days
+    } else if (width < 1024) {
+      // Medium screens (md)
+      setDaysToDisplay(7); // Show 7 days
+    } else if (width < 1440) {
+      // Large screens (lg)
+      setDaysToDisplay(10); // Show 10 days
+    } else {
+      setDaysToDisplay(13);
+    }
+  };
 
     // Call the function on initial render and whenever the window is resized
     useEffect(() => {
@@ -92,6 +103,8 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
     const handleDateClick = (date: Date) => {
         onDateClick(date);
         setCurrentDate(date);
+        setMonth(date.getMonth());
+        setYear(date.getFullYear());
     };
 
     const pressTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -101,6 +114,8 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
     const handlePressStart = () => {
         pressTimerRef.current = setTimeout(() => {
             setIsLongPressing(true);
+            setMonth(new Date().getMonth()); // Reset to current month
+            setYear(new Date().getFullYear()); // Reset to current year
             setCurrentDate(new Date()); // Set to today's date
             setVisibleDates(generateWeekDates(new Date(), daysToDisplay)); // Refresh the visible dates
         }, LONG_PRESS_THRESHOLD);
@@ -114,48 +129,93 @@ const Calendar: React.FC<CalendarProps> = ({ onDateClick }) => {
         setIsLongPressing(false);
     };
 
+    const handleSelectMonth = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newMonth = Number(event.target.value);
+        setMonth(newMonth);
+        const newDate = new Date(year, newMonth, currentDate.getDate()); 
+   
+        setCurrentDate(newDate);
+  
+        setVisibleDates(generateWeekDates(newDate, daysToDisplay));
+        onDateClick(newDate);
+    };
+
+    const handleSelectYear = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setYear(Number(event?.target?.value));
+        setVisibleDates(generateWeekDates(new Date(Number(event?.target?.value), month, 1), daysToDisplay));
+    };
+
     const isNextDisabled = visibleDates[visibleDates.length - 1].toDateString() === today.toDateString();
     return (
         <div className="text-white">
             {/* Calendar Header */}
             <div className="flex mb-2 justify-between items-center">
                 <h2 className="text-lg font-semibold">
-                    {monthMap[currentDate.getMonth()]} {currentDate.getFullYear()}
+                <label className=" bg-panelButtonColor rounded-md p-2">
+                    <select
+                        name={monthMap[currentDate.getMonth()]}
+                        value={month}
+                        onChange={handleSelectMonth}
+                        className="bg-panelButtonColor text-primaryYellow rounded-md outline-none bg-transparent"
+                    >
+                        {monthValues.map((month, index) => (
+                            <option key={month} value={index}>
+                                {month}
+                            </option>
+                        ))}
+                    </select>
+                    <select
+                        name={currentDate.getFullYear().toString()}
+                        value={year}
+                        onChange={handleSelectYear}
+                        className="bg-panelButtonColor text-primaryYellow rounded-md outline-none"
+                    >
+                        {years.map((year, index) => (
+                            <option key={index} value={year}>
+                                {year}
+                            </option>
+                        ))}
+                    </select>
+                </label>
                 </h2>
                 <div className="flex space-x-2">
-                    <button
-                        onClick={handlePreviousDay}
-                        className="text-white"
-                    >
-                        <ChevronLeft className="aspect-square w-12 h-12" />
-                    </button>
-                    <button
-                        onMouseDown={handlePressStart}
-                        onMouseUp={handlePressEnd}
-                        onMouseLeave={handlePressEnd}
-                        onClick={!isLongPressing ? handleNextDay : undefined}
-                        disabled={isNextDisabled}
-                        className={`text-white aspect-square ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        <ChevronRight className="aspect-square w-12 h-12" />
-                    </button>
+                <button onClick={handlePreviousDay} className="text-white">
+                    <ChevronLeft className="aspect-square w-12 h-12" />
+                </button>
+                <button
+                    onMouseDown={handlePressStart}
+                    onMouseUp={handlePressEnd}
+                    onMouseLeave={handlePressEnd}
+                    onClick={!isLongPressing ? handleNextDay : undefined}
+                    disabled={isNextDisabled}
+                    className={`text-white aspect-square ${
+                    isNextDisabled ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                >
+                    <ChevronRight className="aspect-square w-12 h-12" />
+                </button>
                 </div>
             </div>
             <div className="ml-5 flex justify-between overflow-x-hidden overflow-y-visible">
                 {visibleDates.map((dateObj, index) => (
-                    <div
-                        key={index}
-                        className={`relative m-1 flex flex-col items-center p-3 aspect-square w-16 h-16 rounded-lg transition-transform duration-300 bg-panelButtonColor ${dateObj.toDateString() === currentDate.toDateString() ? 'border border-yellow-500' : ''
-                            }`}
-                        onClick={() => handleDateClick(dateObj)}
-                    >
-                        <span className="text-xs font-light text-primaryYellow">{weekdays[dateObj.getDay()]}</span>
-                        <span className="text-lg font-bold mt-1">{dateObj.getDate()}</span>
-                        {/* Circle indicator only for today's date */}
-                        {dateObj.toDateString() === today.toDateString() && (
-                            <div className="absolute top-full left-1/2 w-2 h-2 bg-primaryYellow rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                        )}
-                    </div>
+                <div
+                    key={index}
+                    className={`relative m-1 flex flex-col items-center p-3 aspect-square w-16 h-16 rounded-lg transition-transform duration-300 bg-panelButtonColor ${
+                    dateObj.toDateString() === currentDate.toDateString()
+                        ? "border border-yellow-500"
+                        : ""
+                    }`}
+                    onClick={() => handleDateClick(dateObj)}
+                >
+                    <span className="text-xs font-light text-primaryYellow">
+                    {weekdays[dateObj.getDay()]}
+                    </span>
+                    <span className="text-lg font-bold mt-1">{dateObj.getDate()}</span>
+                    {/* Circle indicator only for today's date */}
+                    {dateObj.toDateString() === today.toDateString() && (
+                    <div className="absolute top-full left-1/2 w-2 h-2 bg-primaryYellow rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                    )}
+                </div>
                 ))}
             </div>
         </div>
