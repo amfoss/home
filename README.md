@@ -32,6 +32,12 @@
 
 amFOSS Home is the central dashboard for the amFOSS community, helping track, manage, and visualize member attendance, status updates, and other key activities. It is designed to work seamlessly with our [Rust backend](https://github.com/amfoss/root), providing a modern, interactive interface for both members and administrators. All data is fetched and updated via a GraphQL API.
 
+# Project Structure Overview
+The project follows Next.js App Router conventions with a clear separation of concerns:
+#### File System to Code Entity Mapping
+
+<img width="1288" height="331" alt="Image" src="https://github.com/user-attachments/assets/3fd48006-328e-43fa-a618-89a993d26570" />
+---
 
 ## Key Features
 
@@ -126,11 +132,11 @@ You can use the GraphiQL interface at [https://root.amfoss.in/graphiql](https://
     - Go to [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
-# Application Structure and Key Components
+# Service Layer Architecture
 
-The application follows Next.js 13+ app directory structure with a clear component hierarchy and service layer pattern:
+The Data Services layer follows a service-oriented architecture where specialized service classes handle different domain areas. Each service class provides methods that encapsulate GraphQL queries, data transformation, and error handling logic.
 
-<img width="1124" height="318" alt="Image" src="https://github.com/user-attachments/assets/a1831c6c-8a91-41db-b8e2-19ca7634c9b2" />
+<img width="1286" height="690" alt="Image" src="https://github.com/user-attachments/assets/1174b518-884b-4f35-a674-50f7b57304c6" />
 
 ---
 
