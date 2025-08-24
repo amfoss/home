@@ -48,16 +48,16 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                                 : "text-red-500" 
                                 }`}
                             key={index}
-                            aria-label={`Attendance record for ${attendance.name}`}
+                            aria-label={`Attendance record for ${attendance.member.name}`}
                         >
                             <div
                                 className="min-w-[8.5rem] basis-2/5 px-4 truncate text-left"
-                                title={attendance.name}
+                                title={attendance.member.name}
                             >
-                                {truncate(attendance.name, 30)}
+                                {truncate(attendance.member.name, 30)}
                             </div>
                             <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
-                                {attendance.year}
+                                {attendance.member.year}
                             </div>
 
                             {complete && (

@@ -2,6 +2,7 @@
 
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
+import toast from 'react-hot-toast'
 import {
   GetAttendanceDetailsQueryResponse,
   AttendanceDetails,
@@ -10,9 +11,10 @@ import {
 const GET_ATTENDANCE_DETAILS_QUERY = gql`
   query GABD($date:NaiveDate!) {
     attendanceByDate(date: $date ) {				 
-      memberId
-      name
-      year
+      member {
+        name
+        year
+      }
       timeIn
       timeOut
       isPresent
@@ -36,7 +38,8 @@ export const AttendanceService = {
       return attendanceDetails;
     } catch (error) {
       console.error("Error fetching attendance details:", error);
-      throw new Error("Could not fetch attendance details");
+      toast.error("failed to fetch attendace data")
+      return [];
     }
   },
 };

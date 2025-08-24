@@ -1,8 +1,6 @@
 // Type for the AttendanceDetails object returned by the query
 export type AttendanceDetails = {
-  memberId: string;
-  name: string;
-  year: string;
+  member: Member;
   timeIn: any;
   timeOut: any;
   isPresent: boolean;
@@ -10,7 +8,7 @@ export type AttendanceDetails = {
 
 // Type for the Member object
 export type Member = {
-  id: string;
+  id?: string;
   name: string;
   year: string;
 };

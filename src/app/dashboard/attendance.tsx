@@ -46,6 +46,7 @@ export const AttendancePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const attendanceListTitle = ["Name", "Year", "In Time", "Out Time"];
 
@@ -125,14 +126,14 @@ export const AttendancePage: React.FC = () => {
   const filteredData = [...presentMembers, ...absentMembers];
 
   return (
-      <div className="flex overflow-scroll h-screen w-full mb-5 flex-shrink-0">
+    <div className="flex overflow-scroll h-screen w-full mb-5 flex-shrink-0 scroll-smooth">
       <div className="flex flex-col w-full max-h-fit p-5">
         <div className=" mx-2 max-h-30 pb-10 ">
           {/* Additional content can go here */}
           <Calendar onDateClick={handleDateClick} />
         </div>
         <div className="flex flex-col min-h-full xl:flex-row w-full">
-          <div className="sm:h-[600px] xl:h-full">
+          <div className="sm:h-[600px] xl:h-full w-full xl:w-2/3">
             <AttendanceDetailRow
               complete={true}
               titles={attendanceListTitle}
@@ -143,8 +144,8 @@ export const AttendancePage: React.FC = () => {
           </div>
 
           {/* Flex container for the two boxes */}
-          <div className="flex flex-row sm:flex-col md:flex-row xl:flex-col gap-5  xl:h-full xl:ml-5 xl:mt-0 mt-5 w-2/5 md:w-full md:h-full ">
-            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center min-w-64 h-fit xl:h-2/5 xl:w-full w-full">
+          <div className="flex flex-row sm:flex-col md:flex-row xl:flex-col gap-5 xl:h-full xl:ml-5 xl:mt-0 mt-5 w-full xl:w-1/3 md:w-full md:h-96 ">
+            <div className="flex flex-col bg-panelButtonColor rounded-md p-8 items-center justify-center min-w-64 xl:h-2/5 xl:w-full w-full md:w-1/2">
               {/*TODO: need to implement absentee list.*/}
               <Doughnut
                 data={{
@@ -175,7 +176,7 @@ export const AttendancePage: React.FC = () => {
             </div>
             {/* <div className=" bg-panelButtonColor min-h-fit rounded-md min-h-3/5 h-full w-full"> */}
             {/*need to implement some sorta graph*/}
-            <Card className="bg-panelButtonColor  w-full xl:w-full h-fit text-white">
+            <Card className="bg-panelButtonColor w-full xl:w-full xl:h-3/5 text-white overflow-hidden md:w-1/2 flex flex-col">
               <CardHeader>
                 <div>
                   <CardTitle className="bg-panelButtonColor text-primaryYellow">
@@ -186,14 +187,16 @@ export const AttendancePage: React.FC = () => {
                   </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="w-full xl:max-h-96 overflow-y-scroll">
-                  <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
-                    <div className="px-5 basis-2/5">Name</div>
-                    <div className="pl-5 basis-2/5">Year</div>
-                    <div className="pl-5 basis-1/5">TimeIn</div>
+              <CardContent className="flex-grow min-h-0 overflow-y-auto scroll-smooth">
+                <div className="w-full">
+                  <div className="sticky top-0 bg-panelButtonColor z-10">
+                    <div className="grid grid-cols-[1fr_90px_90px] items-center w-full">
+                      <div className="px-5">Name</div>
+                      <div className="text-center">Year</div>
+                      <div className="pl-5">TimeIn</div>
+                    </div>
+                    <hr className="border-t border-white mt-2" />
                   </div>
-                  <hr className="border-t border-white mt-2" />
                   {loading ? (
                     <p className="text-center p-2 text-white"> Loading...</p>
                   ) : error ? (
@@ -204,15 +207,22 @@ export const AttendancePage: React.FC = () => {
                     lateMembers.map((item, index) => (
                       <div
                         key={index}
-                        className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full py-2 border-b border-gray-500"
+                        className="grid grid-cols-[1fr_90px_90px] items-center w-full py-2 border-b border-gray-500"
                       >
-                        <div className="px-5 basis-2/5 text-[#facfa5]">
-                          {item.name}
+                        <div
+                          className={`px-5 text-[#facfa5] overflow-hidden ${
+                            expandedRow !== index && "text-ellipsis whitespace-nowrap"
+                          }`}
+                          onClick={() =>
+                            setExpandedRow(expandedRow === index ? null : index)
+                          }
+                        >
+                          {item.member.name}
                         </div>
-                        <div className="pl-5 basis-2/5 text-[#facfa5]">
-                          {item.year}
+                        <div className="text-center text-[#facfa5]">
+                          {item.member.year}
                         </div>
-                        <div className="pl-5 basis-1/5 text-[#facfa5]">
+                        <div className="pl-5 text-[#facfa5]">
                           {item.timeIn?.substring(0, 8)}
                         </div>
                       </div>
