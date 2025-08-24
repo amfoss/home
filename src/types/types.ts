@@ -1,17 +1,14 @@
 // Type for the AttendanceDetails object returned by the query
 export type AttendanceDetails = {
-  id: string;
-  timein: string;
-  timeout: string;
+  member: Member;
+  timeIn: any;
+  timeOut: any;
   isPresent: boolean;
-  date: string;
-  memberName: string;
-  year: string;
 };
 
 // Type for the Member object
 export type Member = {
-  id: string;
+  id?: string;
   name: string;
   year: string;
 };
@@ -26,6 +23,7 @@ export type Attendance = {
 
 // Type for the GraphQL Query response for attendance details
 export type GetAttendanceDetailsQueryResponse = {
+  [x: string]: any;
   getAttendance: AttendanceDetails[];
 };
 

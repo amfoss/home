@@ -1,36 +1,59 @@
-<div align="center">
-  <h1>amFOSS Home</h1>
-  <p>A full-stack web application for managing and visualizing amFOSS club member activity</p>
-</div>
+<p align="center">
+  <img src="public/H__ME.png" width="400" alt="HOME Logo" />
+</p>
+
+<p align='center'>A full-stack web application for managing and visualizing amFOSS club member activity</p>
+
+
+<p align="center">
+  <a href="https://github.com/amfoss/root">
+    <img src="https://img.shields.io/badge/API-GraphQL-%23e10098?logo=graphql&logoColor=white" alt="GraphQL" />
+  </a>
+  <a href="https://github.com/amfoss/home">
+    <img src="https://img.shields.io/badge/Web-Next.js-orange" alt="Web App" />
+  </a>
+  <a href="https://developers.netlify.com/guides/generating-personal-access-tokens-with-netlify-oauth/">
+    <img src="https://img.shields.io/badge/OAuth-Netlify-00c7b7?logo=netlify&logoColor=white" alt="Netlify" />
+  </a>
+  <a href="https://vercel.com/">
+    <img src="https://img.shields.io/badge/OAuth-Vercel-000000?logo=vercel&logoColor=white" alt="Vercel" />
+    <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app">
+    <img src="https://img.shields.io/badge/OAuth-GitHub-181717?logo=github&logoColor=white" alt="Vercel" />
+  </a>
+  <a href="https://deepwiki.com/amfoss/home">
+    <img src="https://img.shields.io/badge/Docs-DeepWiki-blueviolet" alt="Docs" />
+  </a>
+  <a href="#Contributing">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions Welcome" />
+  </a>
+</p>
 
 ---
 
 amFOSS Home is the central dashboard for the amFOSS community, helping track, manage, and visualize member attendance, status updates, and other key activities. It is designed to work seamlessly with our [Rust backend](https://github.com/amfoss/root), providing a modern, interactive interface for both members and administrators. All data is fetched and updated via a GraphQL API.
 
-# Features
+# Project Structure Overview
+The project follows Next.js App Router conventions with a clear separation of concerns:
+#### File System to Code Entity Mapping
 
-- **Attendance Tracking:**  
-  See who attended, when they checked in and out, and view attendance history.
+<img width="1288" height="331" alt="Image" src="https://github.com/user-attachments/assets/3fd48006-328e-43fa-a618-89a993d26570" />
+---
 
-- **Status Updates:**  
-  Track member status streaks and highlight top contributors.
+## Key Features
 
-- **Hall of Fame:**  
-  Recognize members with the best attendance and most status updates.
+| Feature                      | Description                                                                 |
+|------------------------------|-----------------------------------------------------------------------------|
+| Attendance Tracking          | See who attended, when they checked in and out, and view attendance history |
+| Status Updates               | Track member status streaks and highlight top contributors                  |
+| Hall of Fame                 | Recognize members with the best attendance and most status updates          |
+| Charts and Visualizations    | Visualize attendance trends and statistics                                  |
+| Member Directory             | Browse all members, search for individuals, and view their stats            |
+| Low Attendance Alerts        | Quickly spot members who are low on attendance or status updates            |
+| Calendar Integration         | Pick any date to see attendance and activity for that day                   |
 
-- **Charts and Visualizations:**  
-  Visualize attendance trends and statistics.
-
-- **Member Directory:**  
-  Browse all members, search for individuals, and view their stats.
-
-- **Low Attendance Alerts:**  
-  Quickly spot members who are low on attendance or status updates.
-
-- **Calendar Integration:**  
-  Pick any date to see attendance and activity for that day.
 
 ---
+
 
 # Tech Stack
 
@@ -109,36 +132,11 @@ You can use the GraphiQL interface at [https://root.amfoss.in/graphiql](https://
     - Go to [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
+# Service Layer Architecture
 
-# Project Structure
+The Data Services layer follows a service-oriented architecture where specialized service classes handle different domain areas. Each service class provides methods that encapsulate GraphQL queries, data transformation, and error handling logic.
 
-Below is a typical directory structure for this project (as shown by the `tree` command):
-
-```
-home/
-├── node_modules/
-├── public/
-│   └── ...static assets...
-├── src/
-│   ├── app/
-│   │   └── dashboard/
-│   │       └── dashboard.tsx
-│   ├── components/
-│   │   ├── Calendar.tsx
-│   │   ├── Card.tsx
-│   │   └── ...other components...
-│   ├── lib/
-│   │   └── apollo-client.ts
-│   ├── services/
-│   │   └── streak-service.ts
-│   └── types/
-│       └── types.ts
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── README.md
-└── tsconfig.json
-```
+<img width="1286" height="690" alt="Image" src="https://github.com/user-attachments/assets/1174b518-884b-4f35-a674-50f7b57304c6" />
 
 ---
 
@@ -190,12 +188,6 @@ If you'd like to fix a bug, add a feature, or improve code quality:
 * Check the open issues to avoid redundancy.
 * Open a draft PR if you'd like feedback on an ongoing contribution.
 * Make sure your pull request targets the correct branch.
-
-
-
-# License
-
-This project is licensed under the MIT License .
 
 ---
 

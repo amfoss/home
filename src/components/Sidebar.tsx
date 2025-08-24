@@ -28,7 +28,7 @@ const SidePanel: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-full p-5 bg-panelColor text-white w-full">
+        <div className="flex flex-col items-center min-h-full p-5 bg-panelColor text-white w-full rounded-md">
             <div className="flex flex-col md:flex-row items-center">
                 <Image
                     src="/amfoss-logo-white.png"

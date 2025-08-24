@@ -29,7 +29,7 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                     {titles.map((title: string, index: number) => (
                         <div
                             key={index}
-                            className="w-1/5 min-w-[8.5rem] p-2 text-center"
+                            className={`w-1/5 min-w-[8.5rem] p-2 text-center ${index === 0 ? "basis-2/5 text-start px-4" : "basis-1/5"}`}
                         >
                             {title}
                         </div>
@@ -43,31 +43,30 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                 ) : attendanceData.length > 0 ? (
                     attendanceData.map((attendance, index) => (
                         <div
-                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent ? "text-offWhite" : "text-red-500"
+                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent 
+                                ? "text-offWhite" 
+                                : "text-red-500" 
                                 }`}
                             key={index}
-                            aria-label={`Attendance record for ${attendance.memberName}`}
+                            aria-label={`Attendance record for ${attendance.member.name}`}
                         >
                             <div
-                                className="min-w-[8.5rem] px-4 w-1/5 truncate text-left"
-                                title={attendance.memberName}
+                                className="min-w-[8.5rem] basis-2/5 px-4 truncate text-left"
+                                title={attendance.member.name}
                             >
-                                {truncate(attendance.memberName, 12)}
+                                {truncate(attendance.member.name, 30)}
                             </div>
-                            <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                {attendance.year}
+                            <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
+                                {attendance.member.year}
                             </div>
 
                             {complete && (
                                 <>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.date || "N/A"}
+                                    <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
+                                        {attendance.timeIn?.substring(0, 8) || "N/A"}
                                     </div>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.timein?.substring(0, 8) || "N/A"}
-                                    </div>
-                                    <div className="min-w-[8.5rem] w-1/5 px-4 text-center">
-                                        {attendance.timeout?.substring(0, 8) || "N/A"}
+                                    <div className="min-w-[8.5rem] basis-1/5 px-4 text-center">
+                                        {attendance.timeOut?.substring(0, 8) || "N/A"}
                                     </div>
                                 </>
                             )}
