@@ -1,6 +1,6 @@
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { MemberDetails, EnrichedMemberData } from "@/types/types";
+import { MemberDetails, EnrichedMemberData ,  AttendanceCountDetails, statusUpdateCountDetails} from "@/types/types";
 
 // GraphQL query to fetch members with their streak info
 const GET_MEMBERS_QUERY = gql`
@@ -13,6 +13,29 @@ const GET_MEMBERS_QUERY = gql`
         maxStreak
         currentStreak
       }
+    }
+  }
+`;
+
+const GET_ATTENDANCE_COUNT_QUERY = gql`
+  query GetAttendanceCounts($startDate: String!, $endDate: String!) {
+    members {
+      memberId
+      name
+      year
+      presentCountByDate(startDate: $startDate, endDate: $endDate)
+      absentCountByDate(startDate: $startDate, endDate: $endDate)
+    }
+  }
+`;
+
+const GET_STATUS_UPDATE_COUNT_QUERY = gql`
+  query GetStatusUpdateCounts($startDate: String!, $endDate: String!) {
+    members {
+      memberId
+      name
+      year
+      statusUpdateCountByDate(startDate: $startDate, endDate: $endDate)
     }
   }
 `;
@@ -113,5 +136,59 @@ export const DashboardService = {
     return result;
   },
 
+  async getLowAttendanceCounts(
+    startDate: string,
+    endDate: string
+  ): Promise<AttendanceCountDetails[]> {
+    try {
+      const { data } = await client.query<{
+        members: {
+          memberId: string;
+          name: string;
+          presentCountByDate: number;
+          absentCountByDate: number;
+        }[];
+      }>({
+        query: GET_ATTENDANCE_COUNT_QUERY,
+        variables: { startDate, endDate },
+      });
 
+      return data.members.map((member) => ({
+        id: member.memberId,
+        name: member.name,
+        presentCountByDate: member.presentCountByDate,
+        absentCountByDate: member.absentCountByDate,
+      }));
+    } catch (error) {
+      console.error("Error fetching attendance count:", error);
+      throw new Error("Could not fetch attendance count");
+    }
+  },
+
+  async getLowStatusUpdateCounts(
+    startDate: string,
+    endDate: string
+  ): Promise<statusUpdateCountDetails[]> {
+    try {
+      const { data } = await client.query<{
+        members: {
+          memberId: string;
+          name: string;
+          statusUpdateCountByDate: number;
+        }[];
+      }>({
+        query: GET_STATUS_UPDATE_COUNT_QUERY,
+        variables: { startDate, endDate },
+      });
+
+      return data.members.map((member) => ({
+        id: member.memberId,
+        name: member.name,
+        statusUpdateCountByDate: member.statusUpdateCountByDate,
+      }));
+    } catch (error) {
+      console.error("Error fetching status update count:", error);
+      throw new Error("Could not fetch status update count");
+    }
+  },
 };
