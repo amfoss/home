@@ -5,40 +5,37 @@ import { MemberDetails, EnrichedMemberData ,  AttendanceCountDetails, statusUpda
 // GraphQL query to fetch members with their streak info
 const GET_MEMBERS_QUERY = gql`
   query my_query {
-    members {
+    allMembers{
       memberId
       name
       year
-      streak {
-        maxStreak
-        currentStreak
+      status{
+        streak{
+          currentStreak
+          maxStreak
+        }
       }
     }
   }
 `;
 
-const GET_ATTENDANCE_COUNT_QUERY = gql`
-  query GetAttendanceCounts($startDate: String!, $endDate: String!) {
-    members {
+const GET_MEMBER_COUNT_QUERY = gql`
+  query GetMemberCounts($startDate: String!, $endDate: String!) {
+    allMembers{
       memberId
       name
       year
-      presentCountByDate(startDate: $startDate, endDate: $endDate)
-      absentCountByDate(startDate: $startDate, endDate: $endDate)
+      attendance{
+        presentCount(startDate: $startDate, endDate: $endDate)
+        absentCount(startDate: $startDate, endDate: $endDate)
+      }
+      status{
+        updateCount(startDate: $startDate, endDate: $endDate)
+      }
     }
   }
 `;
 
-const GET_STATUS_UPDATE_COUNT_QUERY = gql`
-  query GetStatusUpdateCounts($startDate: String!, $endDate: String!) {
-    members {
-      memberId
-      name
-      year
-      statusUpdateCountByDate(startDate: $startDate, endDate: $endDate)
-    }
-  }
-`;
 
 // This query is redundant since it fetches the same data as GET_MEMBERS_QUERY
 // Keeping it for structure, but you can remove it if not needed
@@ -136,59 +133,49 @@ export const DashboardService = {
     return result;
   },
 
-  async getLowAttendanceCounts(
+  async getMemberCounts(
     startDate: string,
     endDate: string
-  ): Promise<AttendanceCountDetails[]> {
+  ): Promise<
+    {
+      id: string;
+      name: string;
+      year: string;
+      presentCountByDate: number;
+      absentCountByDate: number;
+      statusUpdateCountByDate: number;
+    }[]
+  > {
     try {
       const { data } = await client.query<{
-        members: {
+        allMembers: {
           memberId: string;
           name: string;
-          presentCountByDate: number;
-          absentCountByDate: number;
+          year: string;
+          attendance: {
+            presentCount: number;
+            absentCount: number;
+          };
+          status: {
+            updateCount: number;
+          };
         }[];
       }>({
-        query: GET_ATTENDANCE_COUNT_QUERY,
+        query: GET_MEMBER_COUNT_QUERY,
         variables: { startDate, endDate },
       });
 
-      return data.members.map((member) => ({
+      return data.allMembers.map((member) => ({
         id: member.memberId,
         name: member.name,
-        presentCountByDate: member.presentCountByDate,
-        absentCountByDate: member.absentCountByDate,
+        year: member.year,
+        presentCountByDate: member.attendance.presentCount,
+        absentCountByDate: member.attendance.absentCount,
+        statusUpdateCountByDate: member.status.updateCount,
       }));
     } catch (error) {
-      console.error("Error fetching attendance count:", error);
-      throw new Error("Could not fetch attendance count");
+      console.error("Error fetching member counts:", error);
+      throw new Error("Could not fetch member counts");
     }
-  },
-
-  async getLowStatusUpdateCounts(
-    startDate: string,
-    endDate: string
-  ): Promise<statusUpdateCountDetails[]> {
-    try {
-      const { data } = await client.query<{
-        members: {
-          memberId: string;
-          name: string;
-          statusUpdateCountByDate: number;
-        }[];
-      }>({
-        query: GET_STATUS_UPDATE_COUNT_QUERY,
-        variables: { startDate, endDate },
-      });
-
-      return data.members.map((member) => ({
-        id: member.memberId,
-        name: member.name,
-        statusUpdateCountByDate: member.statusUpdateCountByDate,
-      }));
-    } catch (error) {
-      console.error("Error fetching status update count:", error);
-      throw new Error("Could not fetch status update count");
-    }
-  },
+  }
 };

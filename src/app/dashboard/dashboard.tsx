@@ -48,12 +48,12 @@ const Dashboard = () => {
             start.setDate(start.getDate() - 30);
             const startDate = getStartDate(start);
 
-            const data = await DashboardService.getLowAttendanceCounts(startDate, endDate);
+            const data = await DashboardService.getMemberCounts(startDate, endDate);
 
             if (data.length === 0) return;
 
             const filtered = data
-            .filter((m) => m.absentCountByDate > 4)
+            .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
             .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
 
             setLowCountAttendance(filtered);
@@ -71,7 +71,7 @@ const Dashboard = () => {
             start.setDate(start.getDate() - 30);
             const startDate = getStartDate(start);
 
-            const data = await DashboardService.getLowStatusUpdateCounts(startDate, endDate);
+            const data = await DashboardService.getMemberCounts(startDate, endDate);
 
             if (data.length === 0) return;
             
@@ -336,7 +336,6 @@ const Dashboard = () => {
                                     <p className="text-center p-2 text-red-500">No data available</p>
                                     ) : (
                                     [...lowCountAttendance]
-                                    .sort((a, b) => a.presentCountByDate - b.presentCountByDate)
                                     .map((item, index) => (
                                     <div
                                         key={index}
@@ -352,7 +351,6 @@ const Dashboard = () => {
                                         <p className="text-center p-2 text-red-500">No data available</p>
                                     ) : (
                                         [...lowCountStatusUpdate]
-                                        .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
                                         .map((item, index) => (
                                             <div
                                             key={index}
