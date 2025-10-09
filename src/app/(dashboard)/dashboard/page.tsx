@@ -16,12 +16,11 @@ import {
     Legend,
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
-import MemberDetails from "./[memberId]/page";
-import { AttendanceCountDetails ,statusUpdateCountDetails } from "@/types/types";
+import { AttendanceCountDetails, statusUpdateCountDetails } from "@/types/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Dashboard = () => {
+export default function Page() {
     const router = useRouter();
 
     const [lowCountStatusUpdate, setLowCountStatusUpdate] = useState<statusUpdateCountDetails[]>([]);
@@ -38,9 +37,9 @@ const Dashboard = () => {
         topStatusUpdate: { memberName: string; statusRatio: string };
     } | null>(null);
 
-        const fetchLowCountAttendance = async () => {
-            setLoading(true);
-            setError(null);
+    const fetchLowCountAttendance = async () => {
+        setLoading(true);
+        setError(null);
 
         try {
             const endDate = getEndDate(selectedDate);
@@ -128,26 +127,6 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    // const fetchMemberSummary = async () => {
-    //     setLoading(true);
-    //     setError(null);
-
-    //     try {
-    //         const startDate = new Date(selectedDate);
-    //         startDate.setDate(selectedDate.getDate() - 30);
-    //         const formattedStartDate = startDate.toISOString().split("T")[0];
-    //         const formattedEndDate = selectedDate.toISOString().split("T")[0];
-
-    //         const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
-    //         setMemberSummary(response);
-    //     } catch (err) {
-    //         setError("Failed to fetch member summary data.");
-    //         setMemberSummary(null);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
 
     const chartOptions = {
         responsive: true,
@@ -206,7 +185,7 @@ const Dashboard = () => {
         return date.toLocaleDateString("en-US", options);
     };
 
-    const navigateToMemberDetails = (member: MemberDetails) => {
+    const navigateToMemberDetails = (member: any) => {
         router.push(`/dashboard/${member.id}`);
     };
 
@@ -300,7 +279,6 @@ const Dashboard = () => {
                                         Status Updates
                                     </div>
                                 </div>
-
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -322,15 +300,6 @@ const Dashboard = () => {
 
                                 <hr className="border-t border-white mt-2" />
 
-                                {/*need to add query for getting people with least numbers*/}
-                                {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
-                                {/* data.map((item, index) => (
-                                <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
-                                    <div className="px-5">{item.name}</div>
-                                    <div className="pl-5">{item.attended}</div>
-                                    <div className="pl-5">{item.missed}</div>
-                                </div>
-                                ))} */}
                                 {selected === "attendance" ? (
                                     lowCountAttendance.length === 0 ? (
                                     <p className="text-center p-2 text-red-500">No data available</p>
@@ -418,35 +387,27 @@ const Dashboard = () => {
                         <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[500px] md:overflow-x-hidden">
                             <div className="grid grid-cols-4 items-center w-full text-white font-bold py-2 overflow-x-scroll">
                                 <div className="text-left px-10">Members</div>
-                                {/* <div className="text-center ">Active Projects</div> */}
                                 <div className="text-center">Attendance</div>
                                 <div className="text-right px-10">Status Updates</div>
                             </div>
 
                             <hr className="border-t border-gray-600" />
 
-
                             {memberSummary?.enrichedData.map((item, index) => (
                                 <div
                                     key={index}
                                     className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
                                     onClick={() => navigateToMemberDetails(item)}
-
                                 >
                                     <div className="text-left px-10">{item.name}</div>
-                                    {/* <div className="text-center">{item.projects}</div> */}
                                     <div className="text-center">{item.attendanceMonth}</div>
                                     <div className="text-right px-10">{item.statusStreak}</div>
                                 </div>
                             ))}
                         </div>
                     </CardContent>
-
-
                 </Card>
             </div>
-        </div >
+        </div>
     );
-};
-
-export default Dashboard;
+}

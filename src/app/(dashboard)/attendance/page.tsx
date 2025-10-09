@@ -29,8 +29,8 @@ ChartJS.register(
 );
 
 import { AttendanceDetails } from "@/types/types";
-import { AttendanceDetailRow } from "@/components/attendance-track/AttendanceDetails";
-import { AttendanceService } from "@/services/attendance-service"; // Ensure the service is imported
+import { AttendanceDetailRow } from "@/components/AttendanceTable";
+import { AttendanceService } from "@/services/attendance-service";
 import Calendar from "@/components/Calendar";
 import {
   Card,
@@ -40,7 +40,7 @@ import {
   CardTitle,
 } from "@/components/Card";
 
-export const AttendancePage: React.FC = () => {
+export default function Page() {
   // State for attendance data
   const [attendanceData, setAttendanceData] = useState<AttendanceDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -58,7 +58,6 @@ export const AttendancePage: React.FC = () => {
         );
         setAttendanceData(data);
         setLoading(false);
-        console.log(data);
       } catch (err) {
         setError("Failed to fetch attendance data " + err);
         setLoading(false);
@@ -237,6 +236,4 @@ export const AttendancePage: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default AttendancePage;
+}

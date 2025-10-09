@@ -15,7 +15,6 @@ export default function LeaderBoard() {
       <h1 className="mt-5 text-center text-white text-[3rem] sm:text-[2.5rem] md:text-[4.2rem] lg:text-[5rem] font-medium">
         Leaderboard
       </h1>
-      {/* Alltime/Monthly Switch */}
       <div className="flex justify-evenly items-center rounded-xl bg-LeaderBoardCommon w-[50%]">
         <button
           className={`transition-colors duration-300 flex w-[50%] justify-center items-center rounded-md ${
@@ -36,7 +35,6 @@ export default function LeaderBoard() {
           </p>
         </button>
       </div>
-      {/* Top 3 Board */}
       <div className="flex gap-[1%] sm:h-[200px] lg:h-[500px] lg:scale-100 sm:scale-[.38] md:scale-[.57] origin-top">
         <Profile mt={8} rank="Silver" />
         <Profile rank="Gold" />
@@ -47,24 +45,8 @@ export default function LeaderBoard() {
           You have been placed at X rank with XXXX points.
         </p>
       </div>
-
-
-      {/*Table*/}
-      <div className="w-full">
-        <LeaderboardTable/>
-      </div>
-
-      {/*Wall of Shame*/}
-      <p className="mt-5 text-center text-white text-[3rem] sm:text-[2.5rem] md:text-[4.2rem] lg:text-[5rem] font-medium">
-        Wall of Shame
-      </p>
-      <div className="w-full">
-        <div className="flex flex-col md:scale-[.6] lg:scale-[1] md:flex-row justify-evenly items-center gap-4 sm:gap-6 md:gap-8 w-full">
-        <ProfileBottom />
-        <ProfileBottom />
-        <ProfileBottom />
-      </div>
-      </div>
+  
+      <LeaderboardTable isAllTime={alltimemode} />
     </div>
   );
 }
