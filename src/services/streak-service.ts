@@ -52,67 +52,67 @@ const GET_MEMBER_COUNT_QUERY = gql`
 // `;
 
 export const DashboardService = {
-  async getMemberSummary(
-    startDate: string,
-    endDate: string
-  ): Promise<{
-    enrichedData: EnrichedMemberData[];
-    topAttendance: { memberName: string; attendanceRatio: string };
-    topStatusUpdate: { memberName: string; statusRatio: string };
-  }> {
-    try {
-      // Fetch members data (streak info is included)
-      const memberResponse = await client.query<{ members: any[] }>({
-        query: GET_MEMBERS_QUERY,
-      });
+  // async getMemberSummary(
+  //   startDate: string,
+  //   endDate: string
+  // ): Promise<{
+  //   enrichedData: EnrichedMemberData[];
+  //   topAttendance: { memberName: string; attendanceRatio: string };
+  //   topStatusUpdate: { memberName: string; statusRatio: string };
+  // }> {
+  //   try {
+  //     // Fetch members data (streak info is included)
+  //     const memberResponse = await client.query<{ members: any[] }>({
+  //       query: GET_MEMBERS_QUERY,
+  //     });
 
-      const members = memberResponse.data.members;
+  //     const members = memberResponse.data.members;
 
-      let maxStatusRatio = 0;
-      let maxStatusMembers: string[] = [];
+  //     let maxStatusRatio = 0;
+  //     let maxStatusMembers: string[] = [];
 
-      // Enrich member data with streak info and calculate top status updater(s)
-      const enrichedData: EnrichedMemberData[] = members.map((member) => {
-        const streak = member.streak || { currentStreak: 0, maxStreak: 0 };
-        const statusRatio = streak.currentStreak / (streak.maxStreak || 1);
+  //     // Enrich member data with streak info and calculate top status updater(s)
+  //     const enrichedData: EnrichedMemberData[] = members.map((member) => {
+  //       const streak = member.streak || { currentStreak: 0, maxStreak: 0 };
+  //       const statusRatio = streak.currentStreak / (streak.maxStreak || 1);
 
-        if (statusRatio > maxStatusRatio) {
-          maxStatusRatio = statusRatio;
-          maxStatusMembers = [member.name];
-        } else if (statusRatio === maxStatusRatio) {
-          maxStatusMembers.push(member.name);
-        }
+  //       if (statusRatio > maxStatusRatio) {
+  //         maxStatusRatio = statusRatio;
+  //         maxStatusMembers = [member.name];
+  //       } else if (statusRatio === maxStatusRatio) {
+  //         maxStatusMembers.push(member.name);
+  //       }
 
-        return {
-          id: member.memberId,
-          name: member.name,
-          year: member.year,
-          statusStreak: streak.currentStreak,
-          maxStatusStreak: streak.maxStreak,
-          projects: [], // Assuming projects are not fetched in this query
-        };
-      });
+  //       return {
+  //         id: member.memberId,
+  //         name: member.name,
+  //         year: member.year,
+  //         statusStreak: streak.currentStreak,
+  //         maxStatusStreak: streak.maxStreak,
+  //         projects: [], // Assuming projects are not fetched in this query
+  //       };
+  //     });
 
-      // Attendance summary is not available, so we return "N/A"
-      return {
-        enrichedData,
-        topAttendance: {
-          memberName: "N/A",
-          attendanceRatio: "N/A",
-        },
-        topStatusUpdate: {
-          memberName:
-            maxStatusMembers.length > 1
-              ? "a lot of people"
-              : maxStatusMembers[0] || "Unknown",
-          statusRatio: `${Math.round(maxStatusRatio * 100)}%`,
-        },
-      };
-    } catch (error) {
-      console.error("Error fetching member summary data:", error);
-      throw new Error("Could not fetch member summary data");
-    }
-  },
+  //     // Attendance summary is not available, so we return "N/A"
+  //     return {
+  //       enrichedData,
+  //       topAttendance: {
+  //         memberName: "N/A",
+  //         attendanceRatio: "N/A",
+  //       },
+  //       topStatusUpdate: {
+  //         memberName:
+  //           maxStatusMembers.length > 1
+  //             ? "a lot of people"
+  //             : maxStatusMembers[0] || "Unknown",
+  //         statusRatio: `${Math.round(maxStatusRatio * 100)}%`,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     console.error("Error fetching member summary data:", error);
+  //     throw new Error("Could not fetch member summary data");
+  //   }
+  // },
 
     // Dummy implementation for attendance counts
   async getAttendanceCounts(

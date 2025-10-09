@@ -128,25 +128,25 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    const fetchMemberSummary = async () => {
-        setLoading(true);
-        setError(null);
+    // const fetchMemberSummary = async () => {
+    //     setLoading(true);
+    //     setError(null);
 
-        try {
-            const startDate = new Date(selectedDate);
-            startDate.setDate(selectedDate.getDate() - 30);
-            const formattedStartDate = startDate.toISOString().split("T")[0];
-            const formattedEndDate = selectedDate.toISOString().split("T")[0];
+    //     try {
+    //         const startDate = new Date(selectedDate);
+    //         startDate.setDate(selectedDate.getDate() - 30);
+    //         const formattedStartDate = startDate.toISOString().split("T")[0];
+    //         const formattedEndDate = selectedDate.toISOString().split("T")[0];
 
-            const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
-            setMemberSummary(response);
-        } catch (err) {
-            setError("Failed to fetch member summary data.");
-            setMemberSummary(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
+    //         setMemberSummary(response);
+    //     } catch (err) {
+    //         setError("Failed to fetch member summary data.");
+    //         setMemberSummary(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
 
     const chartOptions = {
@@ -196,7 +196,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchAttendanceCount();
-        fetchMemberSummary();
+        // fetchMemberSummary();
         fetchLowCountAttendance();
         fetchLowCountStatusUpdate();
     }, [selectedDate]);
