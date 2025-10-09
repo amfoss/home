@@ -10,14 +10,16 @@ import {
 
 const GET_ATTENDANCE_DETAILS_QUERY = gql`
   query GABD($date:NaiveDate!) {
-    attendanceByDate(date: $date ) {				 
-      member {
-        name
-        year
+    allMembers{
+      name
+      year
+      attendance{
+        onDate(date: $date){
+          timeIn
+          timeOut
+          isPresent
+        }
       }
-      timeIn
-      timeOut
-      isPresent
     }
   }
 `;

@@ -54,3 +54,40 @@ export interface EnrichedMemberData {
   maxStatusStreak: number;
   projects: string[];
 }
+
+export interface AttendanceCountDetails {
+  id: string;
+  name: string;
+  presentCountByDate: number;
+  absentCountByDate: number;
+}
+
+export interface statusUpdateCountDetails {
+  id: string;
+  name: string;  
+  statusUpdateCountByDate: number;
+}
+
+export interface MemberCountDetails {
+  id: string;
+  name: string;
+  year: string;
+  presentCountByDate: number;
+  absentCountByDate: number;
+  statusUpdateCountByDate: number;
+}
+
+export interface MemberCountQueryResult {
+  allMembers: {
+    memberId: string;
+    name: string;
+    year: string;
+    attendance: {
+      presentCount: number;
+      absentCount: number;
+    };
+    status: {
+      updateCount: number;
+    };
+  }[];
+}

@@ -17,27 +17,15 @@ import {
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
 import MemberDetails from "./[memberId]/page";
+import { AttendanceCountDetails ,statusUpdateCountDetails } from "@/types/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
     const router = useRouter();
 
-    const [lowCountData] = useState<{ name: string; attended: number; missed: number }[]>([
-    { name: "Jagadeesh", attended: 2, missed: 5 },
-    { name: "Nishtha", attended: 1, missed: 6 },
-    { name: "Rohit", attended: 4, missed: 3 },
-    { name: "Karthik", attended: 2, missed: 5 },
-    { name: "Sravan", attended: 3, missed: 4 },
-    { name: "Teja sai", attended: 1, missed: 6 },
-    { name: "Malavika", attended: 4, missed: 3 },
-    { name: "Anandajith", attended: 2, missed: 5 },
-    { name: "kushal", attended: 3, missed: 4 },
-    { name: "Naveen", attended: 3, missed: 4 },
-    { name: "Mouli", attended: 3, missed: 4 },
-
-    ]);
-
+    const [lowCountStatusUpdate, setLowCountStatusUpdate] = useState<statusUpdateCountDetails[]>([]);
+    const [lowCountAttendance, setLowCountAttendance] = useState<AttendanceCountDetails[]>([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [attendanceData, setAttendanceData] = useState<number[]>([]);
     const [labels, setLabels] = useState<string[]>([]);
@@ -50,6 +38,52 @@ const Dashboard = () => {
         topStatusUpdate: { memberName: string; statusRatio: string };
     } | null>(null);
 
+        const fetchLowCountAttendance = async () => {
+            setLoading(true);
+            setError(null);
+
+        try {
+            const endDate = getEndDate(selectedDate);
+            const start = new Date(selectedDate);
+            start.setDate(start.getDate() - 30);
+            const startDate = getStartDate(start);
+
+            const data = await DashboardService.getMemberCounts(startDate, endDate);
+
+            if (data.length === 0) return;
+
+            const filtered = data
+            .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
+            .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
+
+            setLowCountAttendance(filtered);
+        } catch (error) {
+            console.error("Error fetching low count members:", error);
+        }
+    };
+    const fetchLowCountStatusUpdate = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const endDate = getEndDate(selectedDate);
+            const start = new Date(selectedDate);
+            start.setDate(start.getDate() - 30);
+            const startDate = getStartDate(start);
+
+            const data = await DashboardService.getMemberCounts(startDate, endDate);
+
+            if (data.length === 0) return;
+            
+            const filtered = data
+            .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
+            .slice(0,20);
+
+            setLowCountStatusUpdate(filtered);
+        } catch (error) {
+            console.error("Error fetching low count members:", error);
+        }
+    };
     const fetchAttendanceCount = async () => {
         setLoading(true);
         setError(null);
@@ -94,25 +128,25 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    const fetchMemberSummary = async () => {
-        setLoading(true);
-        setError(null);
+    // const fetchMemberSummary = async () => {
+    //     setLoading(true);
+    //     setError(null);
 
-        try {
-            const startDate = new Date(selectedDate);
-            startDate.setDate(selectedDate.getDate() - 30);
-            const formattedStartDate = startDate.toISOString().split("T")[0];
-            const formattedEndDate = selectedDate.toISOString().split("T")[0];
+    //     try {
+    //         const startDate = new Date(selectedDate);
+    //         startDate.setDate(selectedDate.getDate() - 30);
+    //         const formattedStartDate = startDate.toISOString().split("T")[0];
+    //         const formattedEndDate = selectedDate.toISOString().split("T")[0];
 
-            const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
-            setMemberSummary(response);
-        } catch (err) {
-            setError("Failed to fetch member summary data.");
-            setMemberSummary(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
+    //         setMemberSummary(response);
+    //     } catch (err) {
+    //         setError("Failed to fetch member summary data.");
+    //         setMemberSummary(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
 
     const chartOptions = {
@@ -162,7 +196,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchAttendanceCount();
-        fetchMemberSummary();
+        // fetchMemberSummary();
+        fetchLowCountAttendance();
+        fetchLowCountStatusUpdate();
     }, [selectedDate]);
 
     const formatDate = (date: Date): string => {
@@ -178,6 +214,14 @@ const Dashboard = () => {
         const startDate = new Date(date);
         startDate.setDate(date.getDate() - range);
         return `${formatDate(startDate)} - ${formatDate(date)}`;
+    };
+
+    const getStartDate = (date: Date) : string => {
+        return date.toISOString().split("T")[0];
+    };
+
+    const getEndDate = (date: Date) : string => {
+        return date.toISOString().split("T")[0];
     };
 
     const handleDateClick = (date: Date) => {
@@ -260,11 +304,20 @@ const Dashboard = () => {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="w-full h-48 overflow-y-scroll">
+                            <div className="w-full h-80 overflow-y-scroll">
                                 <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
                                     <div className="px-5">Name</div>
-                                    <div className="pl-5">Attended</div>
-                                    <div className="pl-5">Missed</div>
+                                    {selected === "attendance" ? (
+                                    <>
+                                        <div className="pl-5">Attended</div>
+                                        <div className="pl-5">Missed</div>
+                                    </>
+                                    ) : (
+                                    <>
+                                        <div className="pl-5">Sent</div>
+                                        <div className="pl-5">Missed</div>
+                                    </>
+                                    )}
                                 </div>
 
                                 <hr className="border-t border-white mt-2" />
@@ -278,18 +331,37 @@ const Dashboard = () => {
                                     <div className="pl-5">{item.missed}</div>
                                 </div>
                                 ))} */}
-                                {lowCountData.length === 0 ? (
-                                <p className="text-center p-2 text-red-500"> No data available</p>
-                            ) : (
-                                lowCountData.map((item, index) => (
-                                    <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
+                                {selected === "attendance" ? (
+                                    lowCountAttendance.length === 0 ? (
+                                    <p className="text-center p-2 text-red-500">No data available</p>
+                                    ) : (
+                                    [...lowCountAttendance]
+                                    .map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
+                                    >
                                         <div className="px-5">{item.name}</div>
-                                        <div className="pl-5">{item.attended}</div>
-                                        <div className="pl-5">{item.missed}</div>
+                                        <div className="pl-5">{item.presentCountByDate}</div>
+                                        <div className="pl-5 text-red-500">{item.absentCountByDate}</div>
                                     </div>
-                                ))
-                            )}
-                                
+                                    ))
+                                        )
+                                    ) : lowCountStatusUpdate.length === 0 ? (
+                                        <p className="text-center p-2 text-red-500">No data available</p>
+                                    ) : (
+                                        [...lowCountStatusUpdate]
+                                        .map((item, index) => (
+                                            <div
+                                            key={index}
+                                            className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
+                                            >
+                                            <div className="px-5">{item.name}</div>
+                                            <div className="pl-5">{item.statusUpdateCountByDate}</div>
+                                            <div className="pl-5 text-red-500">{30 - item.statusUpdateCountByDate}</div>
+                                            </div>
+                                        ))
+                                    )}
                             </div>
                         </CardContent>
                     </Card>

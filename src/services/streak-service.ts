@@ -1,21 +1,41 @@
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { MemberDetails, EnrichedMemberData } from "@/types/types";
+import { MemberDetails, EnrichedMemberData ,  MemberCountDetails, MemberCountQueryResult} from "@/types/types";
 
 // GraphQL query to fetch members with their streak info
 const GET_MEMBERS_QUERY = gql`
   query my_query {
-    members {
+    allMembers{
       memberId
       name
       year
-      streak {
-        maxStreak
-        currentStreak
+      status{
+        streak{
+          currentStreak
+          maxStreak
+        }
       }
     }
   }
 `;
+
+const GET_MEMBER_COUNT_QUERY = gql`
+  query GetMemberCounts($startDate: String!, $endDate: String!) {
+    allMembers{
+      memberId
+      name
+      year
+      attendance{
+        presentCount(startDate: $startDate, endDate: $endDate)
+        absentCount(startDate: $startDate, endDate: $endDate)
+      }
+      status{
+        updateCount(startDate: $startDate, endDate: $endDate)
+      }
+    }
+  }
+`;
+
 
 // This query is redundant since it fetches the same data as GET_MEMBERS_QUERY
 // Keeping it for structure, but you can remove it if not needed
@@ -32,67 +52,67 @@ const GET_MEMBERS_QUERY = gql`
 // `;
 
 export const DashboardService = {
-  async getMemberSummary(
-    startDate: string,
-    endDate: string
-  ): Promise<{
-    enrichedData: EnrichedMemberData[];
-    topAttendance: { memberName: string; attendanceRatio: string };
-    topStatusUpdate: { memberName: string; statusRatio: string };
-  }> {
-    try {
-      // Fetch members data (streak info is included)
-      const memberResponse = await client.query<{ members: any[] }>({
-        query: GET_MEMBERS_QUERY,
-      });
+  // async getMemberSummary(
+  //   startDate: string,
+  //   endDate: string
+  // ): Promise<{
+  //   enrichedData: EnrichedMemberData[];
+  //   topAttendance: { memberName: string; attendanceRatio: string };
+  //   topStatusUpdate: { memberName: string; statusRatio: string };
+  // }> {
+  //   try {
+  //     // Fetch members data (streak info is included)
+  //     const memberResponse = await client.query<{ members: any[] }>({
+  //       query: GET_MEMBERS_QUERY,
+  //     });
 
-      const members = memberResponse.data.members;
+  //     const members = memberResponse.data.members;
 
-      let maxStatusRatio = 0;
-      let maxStatusMembers: string[] = [];
+  //     let maxStatusRatio = 0;
+  //     let maxStatusMembers: string[] = [];
 
-      // Enrich member data with streak info and calculate top status updater(s)
-      const enrichedData: EnrichedMemberData[] = members.map((member) => {
-        const streak = member.streak || { currentStreak: 0, maxStreak: 0 };
-        const statusRatio = streak.currentStreak / (streak.maxStreak || 1);
+  //     // Enrich member data with streak info and calculate top status updater(s)
+  //     const enrichedData: EnrichedMemberData[] = members.map((member) => {
+  //       const streak = member.streak || { currentStreak: 0, maxStreak: 0 };
+  //       const statusRatio = streak.currentStreak / (streak.maxStreak || 1);
 
-        if (statusRatio > maxStatusRatio) {
-          maxStatusRatio = statusRatio;
-          maxStatusMembers = [member.name];
-        } else if (statusRatio === maxStatusRatio) {
-          maxStatusMembers.push(member.name);
-        }
+  //       if (statusRatio > maxStatusRatio) {
+  //         maxStatusRatio = statusRatio;
+  //         maxStatusMembers = [member.name];
+  //       } else if (statusRatio === maxStatusRatio) {
+  //         maxStatusMembers.push(member.name);
+  //       }
 
-        return {
-          id: member.memberId,
-          name: member.name,
-          year: member.year,
-          statusStreak: streak.currentStreak,
-          maxStatusStreak: streak.maxStreak,
-          projects: [], // Assuming projects are not fetched in this query
-        };
-      });
+  //       return {
+  //         id: member.memberId,
+  //         name: member.name,
+  //         year: member.year,
+  //         statusStreak: streak.currentStreak,
+  //         maxStatusStreak: streak.maxStreak,
+  //         projects: [], // Assuming projects are not fetched in this query
+  //       };
+  //     });
 
-      // Attendance summary is not available, so we return "N/A"
-      return {
-        enrichedData,
-        topAttendance: {
-          memberName: "N/A",
-          attendanceRatio: "N/A",
-        },
-        topStatusUpdate: {
-          memberName:
-            maxStatusMembers.length > 1
-              ? "a lot of people"
-              : maxStatusMembers[0] || "Unknown",
-          statusRatio: `${Math.round(maxStatusRatio * 100)}%`,
-        },
-      };
-    } catch (error) {
-      console.error("Error fetching member summary data:", error);
-      throw new Error("Could not fetch member summary data");
-    }
-  },
+  //     // Attendance summary is not available, so we return "N/A"
+  //     return {
+  //       enrichedData,
+  //       topAttendance: {
+  //         memberName: "N/A",
+  //         attendanceRatio: "N/A",
+  //       },
+  //       topStatusUpdate: {
+  //         memberName:
+  //           maxStatusMembers.length > 1
+  //             ? "a lot of people"
+  //             : maxStatusMembers[0] || "Unknown",
+  //         statusRatio: `${Math.round(maxStatusRatio * 100)}%`,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     console.error("Error fetching member summary data:", error);
+  //     throw new Error("Could not fetch member summary data");
+  //   }
+  // },
 
     // Dummy implementation for attendance counts
   async getAttendanceCounts(
@@ -113,5 +133,27 @@ export const DashboardService = {
     return result;
   },
 
+  async getMemberCounts(
+    startDate: string,
+    endDate: string
+  ): Promise<MemberCountDetails[]> {
+    try {
+      const { data } = await client.query<MemberCountQueryResult>({
+        query: GET_MEMBER_COUNT_QUERY,
+        variables: { startDate, endDate },
+      });
 
+      return data.allMembers.map((member) => ({
+        id: member.memberId,
+        name: member.name,
+        year: member.year,
+        presentCountByDate: member.attendance.presentCount,
+        absentCountByDate: member.attendance.absentCount,
+        statusUpdateCountByDate: member.status.updateCount,
+      }));
+    } catch (error) {
+      console.error("Error fetching member counts:", error);
+      throw new Error("Could not fetch member counts");
+    }
+  }
 };
