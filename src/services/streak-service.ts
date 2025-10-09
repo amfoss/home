@@ -1,6 +1,6 @@
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { MemberDetails, EnrichedMemberData ,  AttendanceCountDetails, statusUpdateCountDetails} from "@/types/types";
+import { MemberDetails, EnrichedMemberData ,  MemberCountDetails, MemberCountQueryResult} from "@/types/types";
 
 // GraphQL query to fetch members with their streak info
 const GET_MEMBERS_QUERY = gql`
@@ -136,31 +136,9 @@ export const DashboardService = {
   async getMemberCounts(
     startDate: string,
     endDate: string
-  ): Promise<
-    {
-      id: string;
-      name: string;
-      year: string;
-      presentCountByDate: number;
-      absentCountByDate: number;
-      statusUpdateCountByDate: number;
-    }[]
-  > {
+  ): Promise<MemberCountDetails[]> {
     try {
-      const { data } = await client.query<{
-        allMembers: {
-          memberId: string;
-          name: string;
-          year: string;
-          attendance: {
-            presentCount: number;
-            absentCount: number;
-          };
-          status: {
-            updateCount: number;
-          };
-        }[];
-      }>({
+      const { data } = await client.query<MemberCountQueryResult>({
         query: GET_MEMBER_COUNT_QUERY,
         variables: { startDate, endDate },
       });

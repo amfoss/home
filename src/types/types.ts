@@ -67,3 +67,27 @@ export interface statusUpdateCountDetails {
   name: string;  
   statusUpdateCountByDate: number;
 }
+
+export interface MemberCountDetails {
+  id: string;
+  name: string;
+  year: string;
+  presentCountByDate: number;
+  absentCountByDate: number;
+  statusUpdateCountByDate: number;
+}
+
+export interface MemberCountQueryResult {
+  allMembers: {
+    memberId: string;
+    name: string;
+    year: string;
+    attendance: {
+      presentCount: number;
+      absentCount: number;
+    };
+    status: {
+      updateCount: number;
+    };
+  }[];
+}
