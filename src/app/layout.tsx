@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>Home</title>
             </head>
-            <body className="w-screen h-screen">
+            <body className="w-screen h-screen" suppressHydrationWarning>
                 <ApolloProvider client={client}>
                     {children}
                 </ApolloProvider>

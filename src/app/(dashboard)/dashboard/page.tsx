@@ -16,7 +16,7 @@ import {
     Legend,
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
-import { AttendanceCountDetails, statusUpdateCountDetails } from "@/types/types";
+import { AttendanceCountDetails, statusUpdateCountDetails, EnrichedMemberData } from "@/types/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -35,9 +35,13 @@ export default function Page() {
         enrichedData: any[];
         topAttendance: { memberName: string; attendanceRatio: string };
         topStatusUpdate: { memberName: string; statusRatio: string };
-    } | null>(null);
+    }>({
+        enrichedData: [],
+        topAttendance: { memberName: "Unknown", attendanceRatio: "0%" },
+        topStatusUpdate: { memberName: "Unknown", statusRatio: "0%" }
+    });
 
-    const fetchLowCountAttendance = async () => {
+    const fetchAndProcessAllMemberData = async () => {
         setLoading(true);
         setError(null);
 
@@ -46,41 +50,64 @@ export default function Page() {
             const start = new Date(selectedDate);
             start.setDate(start.getDate() - 30);
             const startDate = getStartDate(start);
-
+            const daysBetween = Math.ceil((selectedDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
             const data = await DashboardService.getMemberCounts(startDate, endDate);
 
-            if (data.length === 0) return;
+            if (data.length === 0) {
+                setLoading(false);
+                return;
+            }
 
-            const filtered = data
-            .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
-            .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
-
-            setLowCountAttendance(filtered);
-        } catch (error) {
-            console.error("Error fetching low count members:", error);
-        }
-    };
-    const fetchLowCountStatusUpdate = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
-            const endDate = getEndDate(selectedDate);
-            const start = new Date(selectedDate);
-            start.setDate(start.getDate() - 30);
-            const startDate = getStartDate(start);
-
-            const data = await DashboardService.getMemberCounts(startDate, endDate);
-
-            if (data.length === 0) return;
+            const lowAttendance = data
+                .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
+                .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
+            setLowCountAttendance(lowAttendance);
             
-            const filtered = data
-            .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
-            .slice(0,20);
+            const lowStatus = [...data]
+                .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
+                .slice(0, 20);
+            setLowCountStatusUpdate(lowStatus);
+            
+            const enrichedMemberData: EnrichedMemberData[] = data.map(member => {
+                const totalDays = member.presentCountByDate + member.absentCountByDate;
+                const attendanceRatio = totalDays > 0 ? member.presentCountByDate / totalDays : 0;
+                
+                return {
+                    id: member.id,
+                    name: member.name,
+                    year: member.year,
+                    attendanceRatio: attendanceRatio,
+                    statusUpdateCountByDate: member.statusUpdateCountByDate,
+                    presentCountByDate: member.presentCountByDate,
+                    absentCountByDate: member.absentCountByDate,
+                    attendanceMonth: `${member.presentCountByDate}/${member.presentCountByDate + member.absentCountByDate}`
+                };
+            });
+            
 
-            setLowCountStatusUpdate(filtered);
+            const maxAttendance = Math.max(...enrichedMemberData.map(m => m.attendanceRatio || 0));
+            const topAttendanceMembers = enrichedMemberData.filter(m => (m.attendanceRatio || 0) === maxAttendance);
+            
+    
+            const maxStatusUpdates = Math.max(...enrichedMemberData.map(m => m.statusUpdateCountByDate || 0));
+            const topStatusMembers = enrichedMemberData.filter(m => (m.statusUpdateCountByDate || 0) === maxStatusUpdates);
+
+            setMemberSummary({
+                enrichedData: enrichedMemberData,
+                topAttendance: {
+                    memberName: topAttendanceMembers.length > 1 ? "Multiple members" : topAttendanceMembers[0]?.name || "Unknown",
+                    attendanceRatio: `${Math.round(maxAttendance * 100)}%`
+                },
+                topStatusUpdate: {
+                    memberName: topStatusMembers.length > 1 ? "Multiple members" : topStatusMembers[0]?.name || "Unknown",
+                    statusRatio: `${maxStatusUpdates}/${daysBetween}` // Use actual days between dates
+                }
+            });
+            
+            setLoading(false);
         } catch (error) {
-            console.error("Error fetching low count members:", error);
+            console.error("Error processing member data:", error);
+            setLoading(false);
         }
     };
     const fetchAttendanceCount = async () => {
@@ -173,11 +200,10 @@ export default function Page() {
         ],
     };
 
+
     useEffect(() => {
         fetchAttendanceCount();
-        // fetchMemberSummary();
-        fetchLowCountAttendance();
-        fetchLowCountStatusUpdate();
+        fetchAndProcessAllMemberData();
     }, [selectedDate]);
 
     const formatDate = (date: Date): string => {
@@ -206,6 +232,13 @@ export default function Page() {
     const handleDateClick = (date: Date) => {
         setSelectedDate(date);
     };
+
+    const daysBetween = (() => {
+        const endDate = selectedDate;
+        const startDate = new Date(selectedDate);
+        startDate.setDate(selectedDate.getDate() - 30);
+        return Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    })();
 
     return (
         <div className="p-2 text-white max-h-screen overflow-scroll">
@@ -292,7 +325,7 @@ export default function Page() {
                                     </>
                                     ) : (
                                     <>
-                                        <div className="pl-5">Sent</div>
+                                        <div className="pl-5">Updates</div>
                                         <div className="pl-5">Missed</div>
                                     </>
                                     )}
@@ -327,7 +360,9 @@ export default function Page() {
                                             >
                                             <div className="px-5">{item.name}</div>
                                             <div className="pl-5">{item.statusUpdateCountByDate}</div>
-                                            <div className="pl-5 text-red-500">{30 - item.statusUpdateCountByDate}</div>
+                                            <div className="pl-5 text-red-500">
+                                                {(item.presentCountByDate + item.absentCountByDate) - item.statusUpdateCountByDate}
+                                            </div>
                                             </div>
                                         ))
                                     )}
@@ -342,7 +377,8 @@ export default function Page() {
                             <CardTitle className="text-yellow-500">Most Attendance</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>{memberSummary ? memberSummary.topAttendance.memberName : "Unknown"}: {memberSummary ? memberSummary.topAttendance.attendanceRatio : "0"}</p>
+                            <p className="font-bold">{memberSummary.topAttendance.memberName}</p>
+                            <p className="text-sm text-yellow-400">{memberSummary.topAttendance.attendanceRatio} attendance</p>
                         </CardContent>
                     </Card>
                     <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
@@ -350,7 +386,8 @@ export default function Page() {
                             <CardTitle className="text-yellow-500">Most Status Updates</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>{memberSummary ? memberSummary.topStatusUpdate.memberName : "Unknown"}: {memberSummary ? memberSummary.topStatusUpdate.statusRatio : "0"}</p>
+                            <p className="font-bold">{memberSummary.topStatusUpdate.memberName}</p>
+                            <p className="text-sm text-yellow-400">{memberSummary.topStatusUpdate.statusRatio} updates</p>
                         </CardContent>
                     </Card>
 
@@ -393,17 +430,23 @@ export default function Page() {
 
                             <hr className="border-t border-gray-600" />
 
-                            {memberSummary?.enrichedData.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
-                                    onClick={() => navigateToMemberDetails(item)}
-                                >
-                                    <div className="text-left px-10">{item.name}</div>
-                                    <div className="text-center">{item.attendanceMonth}</div>
-                                    <div className="text-right px-10">{item.statusStreak}</div>
-                                </div>
-                            ))}
+                            {memberSummary.enrichedData.length === 0 ? (
+                                <p className="text-center p-4 text-gray-400">No member data available</p>
+                            ) : (
+                                memberSummary.enrichedData.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
+                                        onClick={() => navigateToMemberDetails(item)}
+                                    >
+                                        <div className="text-left px-10">{item.name}</div>
+                                        <div className="text-center">{item.attendanceMonth}</div>
+                                        <div className="text-right px-10">
+                                            {item.statusUpdateCountByDate}/{daysBetween}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>

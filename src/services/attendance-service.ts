@@ -4,9 +4,11 @@ import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
 import toast from 'react-hot-toast'
 import {
-  GetAttendanceDetailsQueryResponse,
+  AllMembersAttendanceResponse,
   AttendanceDetails,
+  Member
 } from "@/types/types";
+
 
 const GET_ATTENDANCE_DETAILS_QUERY = gql`
   query GABD($date:NaiveDate!) {
@@ -26,21 +28,30 @@ const GET_ATTENDANCE_DETAILS_QUERY = gql`
 
 
 export const AttendanceService = {
-  // Function to get attendance details based on a specific date
   async getAttendanceDetails(date: string): Promise<AttendanceDetails[]> {
     try {
-      const [attendanceResponse] = await Promise.all([
-        client.query<GetAttendanceDetailsQueryResponse>({
-          query: GET_ATTENDANCE_DETAILS_QUERY,
-          variables: { date },
-        }),
-      ]);
+      const response = await client.query<AllMembersAttendanceResponse>({
+        query: GET_ATTENDANCE_DETAILS_QUERY,
+        variables: { date },
+      });
 
-      const attendanceDetails = attendanceResponse.data.attendanceByDate;
+
+      const attendanceDetails: AttendanceDetails[] = response.data.allMembers.map(item => {
+        return {
+          member: {
+            name: item.name,
+            year: item.year.toString() 
+          },
+          timeIn: item.attendance.onDate.timeIn,
+          timeOut: item.attendance.onDate.timeOut,
+          isPresent: item.attendance.onDate.isPresent
+        };
+      });
+
       return attendanceDetails;
     } catch (error) {
       console.error("Error fetching attendance details:", error);
-      toast.error("failed to fetch attendace data")
+      toast.error("Failed to fetch attendance data");
       return [];
     }
   },
