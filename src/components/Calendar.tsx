@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 
-interface CalendarProps {
+type CalendarProps = {
     onDateClick: (date: Date) => void;
 }
 

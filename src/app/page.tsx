@@ -19,7 +19,22 @@ export default function Home() {
         </div>
         <p className="absolute lg:top-[45vh] md:top-[35vh] sm:top-[42.5vh] left-[0vw] w-[100vw] animate-fadeInUp lg:text-[3vw] md:text-[6vw] sm:text-[7vw] text-white font-bold opacity-0" style={{ textAlign: "center" }}>India's Leading FOSS Club</p>
         <Image className="absolute animate-fadeInUp lg:max-w-[20vw] md:max-w-[40vw] sm:max-w-[43vw] lg:left-[40vw] md:left-[30vw] sm:left-[28vw] lg:top-[52.5vh] sm:top-[48.3vh] opacity-0" src={amfoss} alt="amfoss" />
-        <Link href="/dashboard" className="absolute animate-fadeInUp text-center pt-1 pb-1 font-semibold lg:text-[2.5vh] md:text-3xl sm:text-xl text-black lg:w-[12vw] sm:w-[38vw] md:w-[28vw] bg-yellow-400 lg:rounded-[0.7rem] md:rounded-[0.5rem] sm:rounded-[1rem] lg:top-[70vh] md:top-[75vh] sm:top-[60vh] lg:left-[44vw] md:left-[36vw] sm:left-[33vw] opacity-0 flex items-center justify-center gap-4"><Github />Sign in(Comming Soon)</Link>
+        <Link 
+          href="/dashboard" 
+          className="absolute animate-fadeInUp text-center font-semibold text-black 
+                    lg:px-6 md:px-5 sm:px-4 lg:py-3 md:py-2.5 sm:py-2
+                    lg:text-xl md:text-lg sm:text-base
+                    lg:w-auto md:w-auto sm:w-auto max-w-[90%] truncate
+                    bg-primaryYellow hover:bg-yellow-500 transition-colors duration-300
+                    lg:rounded-xl md:rounded-lg sm:rounded-md
+                    lg:top-[70vh] md:top-[75vh] sm:top-[60vh] 
+                    left-1/2 transform -translate-x-1/2
+                    opacity-0 shadow-lg hover:shadow-xl
+                    flex items-center justify-center gap-3"
+        >
+          <Github className="lg:w-6 lg:h-6 md:w-5 md:h-5 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="whitespace-nowrap">Sign in (Coming Soon)</span>
+        </Link>
         
         </div>
       </div>

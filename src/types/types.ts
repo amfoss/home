@@ -40,7 +40,7 @@ export type GetMemberDetailsQueryResponse = {
 };
 
 // Represents the basic details of a member (aligned with dashboard.tsx)
-export interface MemberDetails {
+export type MemberDetails = {
   memberId: string; // Changed from id to memberId to match dashboard.tsx
   name: string;
   streak?: {
@@ -53,7 +53,7 @@ export interface MemberDetails {
   role?: string;
 }
 
-export interface EnrichedMemberData {
+export type EnrichedMemberData = {
   id: string;
   name: string;
   year: string;
@@ -68,14 +68,14 @@ export interface EnrichedMemberData {
   attendanceMonth?: string;
 }
 
-export interface AttendanceCountDetails {
+export type AttendanceCountDetails = {
   id: string;
   name: string;
   presentCountByDate: number;
   absentCountByDate: number;
 }
 
-export interface statusUpdateCountDetails {
+export type statusUpdateCountDetails = {
   id: string;
   name: string;  
   statusUpdateCountByDate: number;
@@ -83,7 +83,7 @@ export interface statusUpdateCountDetails {
   absentCountByDate: number;
 }
 
-export interface MemberCountDetails {
+export type MemberCountDetails = {
   id: string;
   name: string;
   year: string;
@@ -92,7 +92,7 @@ export interface MemberCountDetails {
   statusUpdateCountByDate: number;
 }
 
-export interface MemberCountQueryResult {
+export type MemberCountQueryResult = {
   allMembers: {
     memberId: string;
     name: string;
