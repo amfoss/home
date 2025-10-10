@@ -1,23 +1,8 @@
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { MemberDetails, EnrichedMemberData ,  MemberCountDetails, MemberCountQueryResult} from "@/types/types";
+import { MemberDetails, EnrichedMemberData, MemberCountDetails, MemberCountQueryResult } from "@/types/types";
 
-// GraphQL query to fetch members with their streak info
-const GET_MEMBERS_QUERY = gql`
-  query my_query {
-    allMembers{
-      memberId
-      name
-      year
-      status{
-        streak{
-          currentStreak
-          maxStreak
-        }
-      }
-    }
-  }
-`;
+
 
 const GET_MEMBER_COUNT_QUERY = gql`
   query GetMemberCounts($startDate: String!, $endDate: String!) {

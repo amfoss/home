@@ -9,20 +9,20 @@ type SideBarButtonProps = {
 const SideBarButton: React.FC<SideBarButtonProps> = ({ icon, text, onClick }) => {
   return (
     <div
-      className="lg:flex justify-center items-center max-w-full bg-panelButtonColor p-5 rounded-none sm:rounded-md md:rounded-xl text-white overflow-hidden cursor-pointer transition-colors duration-500"
+      className="flex md:flex-col items-center md:items-center w-full bg-panelButtonColor p-4 md:p-3 rounded-lg text-white cursor-pointer hover:bg-primaryYellow hover:bg-opacity-20 active:bg-primaryYellow active:bg-opacity-30 transition-all duration-300"
       onClick={() => onClick(text)}
       title={text}
     >
       {/* Icon container */}
-      <div className="flex-3 flex items-center justify-center z-20">
+      <div className="flex items-center justify-center">
         {icon && React.cloneElement(icon, {
-          className: "text-offWhite group-hover:text-primaryYellow transition-colors duration-300"
+          className: "text-offWhite w-6 h-6 hover:text-primaryYellow transition-colors duration-300"
         })}
       </div>
 
       {/* Text container */}
-      <div className="flex-1 flex items-center justify-center z-20">
-        <div className="text-base lg:text-lg hidden md:block">{text}</div>
+      <div className="flex items-center ml-4 md:ml-0 md:mt-2">
+        <div className="text-sm font-medium truncate">{text}</div>
       </div>
     </div>
   );

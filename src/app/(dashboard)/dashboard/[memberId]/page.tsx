@@ -2,7 +2,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-interface MemberDetails {
+type MemberDetails = {
     id: string;
     name: string;
     email: string;
@@ -11,12 +11,11 @@ interface MemberDetails {
 }
 
 const MemberDetails = () => {
-    const { memberId } = useParams(); // Use useParams to get the dynamic route parameter
+    const { memberId } = useParams(); 
     const [memberDetails, setMemberDetails] = useState<MemberDetails | null>(null);
 
     useEffect(() => {
         if (memberId) {
-            // Fetch member details from API or database using the memberId
             fetch(`/api/member/${memberId}`)
                 .then((response) => response.json())
                 .then((data) => setMemberDetails(data))

@@ -22,9 +22,7 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
 
     return (
         <div className="bg-panelButtonColor w-full min-w-[8.5rem] rounded-md overflow-hidden h-full">
-            {/* Scrollable data section */}
             <div className="w-full  h-full overflow-y-auto flex flex-col">
-                {/* Sticky header */}
                 <div className="flex min-w-max p-2 sticky top-0 text-primaryYellow text-xl h-24 bg-panelColor flex-shrink-0 items-center justify-between">
                     {titles.map((title: string, index: number) => (
                         <div

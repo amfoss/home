@@ -16,12 +16,11 @@ import {
     Legend,
 } from "chart.js";
 import { DashboardService } from "@/services/streak-service";
-import MemberDetails from "./[memberId]/page";
-import { AttendanceCountDetails ,statusUpdateCountDetails } from "@/types/types";
+import { AttendanceCountDetails, statusUpdateCountDetails, EnrichedMemberData } from "@/types/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Dashboard = () => {
+export default function Page() {
     const router = useRouter();
 
     const [lowCountStatusUpdate, setLowCountStatusUpdate] = useState<statusUpdateCountDetails[]>([]);
@@ -36,32 +35,13 @@ const Dashboard = () => {
         enrichedData: any[];
         topAttendance: { memberName: string; attendanceRatio: string };
         topStatusUpdate: { memberName: string; statusRatio: string };
-    } | null>(null);
+    }>({
+        enrichedData: [],
+        topAttendance: { memberName: "Unknown", attendanceRatio: "0%" },
+        topStatusUpdate: { memberName: "Unknown", statusRatio: "0%" }
+    });
 
-        const fetchLowCountAttendance = async () => {
-            setLoading(true);
-            setError(null);
-
-        try {
-            const endDate = getEndDate(selectedDate);
-            const start = new Date(selectedDate);
-            start.setDate(start.getDate() - 30);
-            const startDate = getStartDate(start);
-
-            const data = await DashboardService.getMemberCounts(startDate, endDate);
-
-            if (data.length === 0) return;
-
-            const filtered = data
-            .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
-            .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
-
-            setLowCountAttendance(filtered);
-        } catch (error) {
-            console.error("Error fetching low count members:", error);
-        }
-    };
-    const fetchLowCountStatusUpdate = async () => {
+    const fetchAndProcessAllMemberData = async () => {
         setLoading(true);
         setError(null);
 
@@ -70,18 +50,64 @@ const Dashboard = () => {
             const start = new Date(selectedDate);
             start.setDate(start.getDate() - 30);
             const startDate = getStartDate(start);
-
+            const daysBetween = Math.ceil((selectedDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
             const data = await DashboardService.getMemberCounts(startDate, endDate);
 
-            if (data.length === 0) return;
-            
-            const filtered = data
-            .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
-            .slice(0,20);
+            if (data.length === 0) {
+                setLoading(false);
+                return;
+            }
 
-            setLowCountStatusUpdate(filtered);
+            const lowAttendance = data
+                .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
+                .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
+            setLowCountAttendance(lowAttendance);
+            
+            const lowStatus = [...data]
+                .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
+                .slice(0, 20);
+            setLowCountStatusUpdate(lowStatus);
+            
+            const enrichedMemberData: EnrichedMemberData[] = data.map(member => {
+                const totalDays = member.presentCountByDate + member.absentCountByDate;
+                const attendanceRatio = totalDays > 0 ? member.presentCountByDate / totalDays : 0;
+                
+                return {
+                    id: member.id,
+                    name: member.name,
+                    year: member.year,
+                    attendanceRatio: attendanceRatio,
+                    statusUpdateCountByDate: member.statusUpdateCountByDate,
+                    presentCountByDate: member.presentCountByDate,
+                    absentCountByDate: member.absentCountByDate,
+                    attendanceMonth: `${member.presentCountByDate}/${member.presentCountByDate + member.absentCountByDate}`
+                };
+            });
+            
+
+            const maxAttendance = Math.max(...enrichedMemberData.map(m => m.attendanceRatio || 0));
+            const topAttendanceMembers = enrichedMemberData.filter(m => (m.attendanceRatio || 0) === maxAttendance);
+            
+    
+            const maxStatusUpdates = Math.max(...enrichedMemberData.map(m => m.statusUpdateCountByDate || 0));
+            const topStatusMembers = enrichedMemberData.filter(m => (m.statusUpdateCountByDate || 0) === maxStatusUpdates);
+
+            setMemberSummary({
+                enrichedData: enrichedMemberData,
+                topAttendance: {
+                    memberName: topAttendanceMembers.length > 1 ? "Multiple members" : topAttendanceMembers[0]?.name || "Unknown",
+                    attendanceRatio: `${Math.round(maxAttendance * 100)}%`
+                },
+                topStatusUpdate: {
+                    memberName: topStatusMembers.length > 1 ? "Multiple members" : topStatusMembers[0]?.name || "Unknown",
+                    statusRatio: `${maxStatusUpdates}/${daysBetween}` // Use actual days between dates
+                }
+            });
+            
+            setLoading(false);
         } catch (error) {
-            console.error("Error fetching low count members:", error);
+            console.error("Error processing member data:", error);
+            setLoading(false);
         }
     };
     const fetchAttendanceCount = async () => {
@@ -128,26 +154,6 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    // const fetchMemberSummary = async () => {
-    //     setLoading(true);
-    //     setError(null);
-
-    //     try {
-    //         const startDate = new Date(selectedDate);
-    //         startDate.setDate(selectedDate.getDate() - 30);
-    //         const formattedStartDate = startDate.toISOString().split("T")[0];
-    //         const formattedEndDate = selectedDate.toISOString().split("T")[0];
-
-    //         const response = await DashboardService.getMemberSummary(formattedStartDate, formattedEndDate);
-    //         setMemberSummary(response);
-    //     } catch (err) {
-    //         setError("Failed to fetch member summary data.");
-    //         setMemberSummary(null);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
 
     const chartOptions = {
         responsive: true,
@@ -194,11 +200,10 @@ const Dashboard = () => {
         ],
     };
 
+
     useEffect(() => {
         fetchAttendanceCount();
-        // fetchMemberSummary();
-        fetchLowCountAttendance();
-        fetchLowCountStatusUpdate();
+        fetchAndProcessAllMemberData();
     }, [selectedDate]);
 
     const formatDate = (date: Date): string => {
@@ -206,7 +211,7 @@ const Dashboard = () => {
         return date.toLocaleDateString("en-US", options);
     };
 
-    const navigateToMemberDetails = (member: MemberDetails) => {
+    const navigateToMemberDetails = (member: any) => {
         router.push(`/dashboard/${member.id}`);
     };
 
@@ -227,6 +232,13 @@ const Dashboard = () => {
     const handleDateClick = (date: Date) => {
         setSelectedDate(date);
     };
+
+    const daysBetween = (() => {
+        const endDate = selectedDate;
+        const startDate = new Date(selectedDate);
+        startDate.setDate(selectedDate.getDate() - 30);
+        return Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    })();
 
     return (
         <div className="p-2 text-white max-h-screen overflow-scroll">
@@ -300,7 +312,6 @@ const Dashboard = () => {
                                         Status Updates
                                     </div>
                                 </div>
-
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -314,7 +325,7 @@ const Dashboard = () => {
                                     </>
                                     ) : (
                                     <>
-                                        <div className="pl-5">Sent</div>
+                                        <div className="pl-5">Updates</div>
                                         <div className="pl-5">Missed</div>
                                     </>
                                     )}
@@ -322,15 +333,6 @@ const Dashboard = () => {
 
                                 <hr className="border-t border-white mt-2" />
 
-                                {/*need to add query for getting people with least numbers*/}
-                                {/* <p className="text-center p-2 text-red-500"> No data available</p>*/}
-                                {/* data.map((item, index) => (
-                                <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500">
-                                    <div className="px-5">{item.name}</div>
-                                    <div className="pl-5">{item.attended}</div>
-                                    <div className="pl-5">{item.missed}</div>
-                                </div>
-                                ))} */}
                                 {selected === "attendance" ? (
                                     lowCountAttendance.length === 0 ? (
                                     <p className="text-center p-2 text-red-500">No data available</p>
@@ -358,7 +360,9 @@ const Dashboard = () => {
                                             >
                                             <div className="px-5">{item.name}</div>
                                             <div className="pl-5">{item.statusUpdateCountByDate}</div>
-                                            <div className="pl-5 text-red-500">{30 - item.statusUpdateCountByDate}</div>
+                                            <div className="pl-5 text-red-500">
+                                                {(item.presentCountByDate + item.absentCountByDate) - item.statusUpdateCountByDate}
+                                            </div>
                                             </div>
                                         ))
                                     )}
@@ -373,7 +377,8 @@ const Dashboard = () => {
                             <CardTitle className="text-yellow-500">Most Attendance</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>{memberSummary ? memberSummary.topAttendance.memberName : "Unknown"}: {memberSummary ? memberSummary.topAttendance.attendanceRatio : "0"}</p>
+                            <p className="font-bold">{memberSummary.topAttendance.memberName}</p>
+                            <p className="text-sm text-yellow-400">{memberSummary.topAttendance.attendanceRatio} attendance</p>
                         </CardContent>
                     </Card>
                     <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
@@ -381,7 +386,8 @@ const Dashboard = () => {
                             <CardTitle className="text-yellow-500">Most Status Updates</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>{memberSummary ? memberSummary.topStatusUpdate.memberName : "Unknown"}: {memberSummary ? memberSummary.topStatusUpdate.statusRatio : "0"}</p>
+                            <p className="font-bold">{memberSummary.topStatusUpdate.memberName}</p>
+                            <p className="text-sm text-yellow-400">{memberSummary.topStatusUpdate.statusRatio} updates</p>
                         </CardContent>
                     </Card>
 
@@ -418,35 +424,33 @@ const Dashboard = () => {
                         <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[500px] md:overflow-x-hidden">
                             <div className="grid grid-cols-4 items-center w-full text-white font-bold py-2 overflow-x-scroll">
                                 <div className="text-left px-10">Members</div>
-                                {/* <div className="text-center ">Active Projects</div> */}
                                 <div className="text-center">Attendance</div>
                                 <div className="text-right px-10">Status Updates</div>
                             </div>
 
                             <hr className="border-t border-gray-600" />
 
-
-                            {memberSummary?.enrichedData.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
-                                    onClick={() => navigateToMemberDetails(item)}
-
-                                >
-                                    <div className="text-left px-10">{item.name}</div>
-                                    {/* <div className="text-center">{item.projects}</div> */}
-                                    <div className="text-center">{item.attendanceMonth}</div>
-                                    <div className="text-right px-10">{item.statusStreak}</div>
-                                </div>
-                            ))}
+                            {memberSummary.enrichedData.length === 0 ? (
+                                <p className="text-center p-4 text-gray-400">No member data available</p>
+                            ) : (
+                                memberSummary.enrichedData.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
+                                        onClick={() => navigateToMemberDetails(item)}
+                                    >
+                                        <div className="text-left px-10">{item.name}</div>
+                                        <div className="text-center">{item.attendanceMonth}</div>
+                                        <div className="text-right px-10">
+                                            {item.statusUpdateCountByDate}/{daysBetween}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
-
-
                 </Card>
             </div>
-        </div >
+        </div>
     );
-};
-
-export default Dashboard;
+}
