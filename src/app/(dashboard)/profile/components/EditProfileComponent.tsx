@@ -1,19 +1,10 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { GetProfileService } from '@/services/profile-services';
+import { MemberProfileDetails } from '@/types/types';
+import toast from 'react-hot-toast';
 
-type ProfileData = {
-  name: string,
-  rollno: string,
-  sex: string,
-  year: number,
-  track: string,
-  email: string,
-  hostel: string,
-  discord: string,
-  macAddress: string,
-  profileImage: string
-}
 
 type EditProfileProps = {
   onCancel: () => void;
@@ -22,24 +13,24 @@ type EditProfileProps = {
 export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const router = useRouter();
 
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: "John Doe",
-    rollno: "am.sc.u4XX12345",
-    sex: "johndoe",
-    year: 1,
-    track: "Web",
-    email: "johndoe@example.com",
-    hostel: 'Prasadam',
-    discord: 'TrumpKiller69',
-    macAddress: 'A1:B2:C3:D4',
-    profileImage: "/placeholder.webp"
+  const [profileData, setProfileData] = useState<MemberProfileDetails>({
+    memberId:0,
+    name: "",
+    rollNo: "",
+    sex: "",
+    track: "",
+    email: "",
+    hostel: '',
+    discordId: '',
+    macAddress: '',
   });
   const tracks = ['Web', 'Systems', 'AI', 'Mobile'];
 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [GenToggle, setGenToggle] = useState([false, false, false]);
-  const [previewUrl, setPreviewUrl] = useState<string>(profileData.profileImage);
+  const [isLoading, setIsLoading] = useState(true);
+  const [GenToggle, setGenToggle] = useState([false, false]);
+  const [previewUrl, setPreviewUrl] = useState<string>("/placeholder.webp");
   const [isUserEnrolling, setUserEnrolling] = useState(true);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,7 +41,18 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
     });
   };
 
-
+  useEffect(()=>{
+    async function getProfileDetails() {
+      const member = await GetProfileService.getProfileDetails();
+      setGenToggle([member?.sex == "M",member?.sex == "F"]);
+     if(member){
+        setProfileData(member);
+        setIsLoading(false);
+     }
+     else console.log("Error Fetching User Data!");
+    }
+    getProfileDetails();
+  },[])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -67,13 +69,18 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
+    async function Update() {
+      let data = await GetProfileService.UpdateProfileDetails(profileData);
+      if(data){
+        setProfileData(data);
+        handleCancel();
+      }
+      else{
+        console.log("Error in Updating User");
+      }
       setIsSubmitting(false);
-      // Always redirect back to the main profile page after successful update
-      router.push('/profile');
-    }, 1000);
+    }
+    Update();
   };
 
   const handleCancel = () => {
@@ -86,10 +93,13 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   };
 
   const trackUi: JSX.Element[] = tracks.map((track) => (
-    <option key={track} value={track}>{track}</option>
+    <option key={track} value={track}>
+      {track}
+    </option>
   ));
 
-  return (
+  if(!isLoading){
+      return (
     <div className="container mx-auto px-4 py-8">
       {isUserEnrolling ? (
       <h1 className="text-2xl font-bold text-white mb-2">SetUp Profile</h1>
@@ -152,19 +162,21 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
               ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}
               `}
               onClick={() => {
-                setGenToggle([idx === 0, idx === 1, idx === 2]);
-                setProfileData({ ...profileData, sex: label });
+                setGenToggle([idx === 0, idx === 1]);
+                setProfileData({ ...profileData, sex: label == 'Male' ? 'M' : 'F' });
               }}
               >
               {label}
               </button>
             ))}
-            </div>
+          </div>
           </div>
           <div>
             <label className="block text-gray-400 text-sm mb-1">Track</label>
             <select
             name="track"
+            value={profileData.track}
+            onChange={(e) => setProfileData({ ...profileData, track: e.target.value })}
             disabled={!isUserEnrolling}
             className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -176,8 +188,8 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
             <input
             type="text"
             disabled={!isUserEnrolling}
-            name="rollno"
-            value={profileData.rollno}
+            name="rollNo"
+            value={profileData.rollNo}
             onChange={handleChange}
             className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
@@ -217,8 +229,8 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
                   <label className="block text-gray-400 text-sm mb-1">Discord Id</label>
                   <input
                     type="text"
-                    name="discord"
-                    value={profileData.discord}
+                    name="discordId"
+                    value={profileData.discordId}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow"
                   />
@@ -227,7 +239,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
                   <label className="block text-gray-400 text-sm mb-1">Mac Address</label>
                   <input
                     type="text"
-                    name="mac_address"
+                    name="macAddress"
                     value={profileData.macAddress}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow"
@@ -258,4 +270,12 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
 
     </div>
   );
+  }else{
+    return(
+      <div className="flex items-center justify-center w-full min-h-screen">
+        <h1 className="text-white text-lg font-medium">Loading...</h1>
+      </div>
+    )
+  }
+
 }
