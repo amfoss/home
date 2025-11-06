@@ -94,8 +94,10 @@ export type MemberCountDetails = {
 
 export type MemberProfileDetails = {
     memberId: number,
+    year:number,
     name:string,
     track:string,
+    groupId:number,
     sex: string,
     rollNo:string,
     hostel:string,

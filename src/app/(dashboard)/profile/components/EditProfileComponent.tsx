@@ -15,6 +15,8 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
 
   const [profileData, setProfileData] = useState<MemberProfileDetails>({
     memberId:0,
+    groupId:1,
+    year:1,
     name: "",
     rollNo: "",
     sex: "",
@@ -31,7 +33,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [GenToggle, setGenToggle] = useState([false, false]);
   const [previewUrl, setPreviewUrl] = useState<string>("/placeholder.webp");
-  const [isUserEnrolling, setUserEnrolling] = useState(true);
+  const [isUserEnrolling, setUserEnrolling] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -44,12 +46,15 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   useEffect(()=>{
     async function getProfileDetails() {
       const member = await GetProfileService.getProfileDetails();
-      setGenToggle([member?.sex == "M",member?.sex == "F"]);
      if(member){
         setProfileData(member);
+        setGenToggle([member?.sex == "M",member?.sex == "F"]);
         setIsLoading(false);
      }
-     else console.log("Error Fetching User Data!");
+     else {
+      setIsLoading(false);
+      setUserEnrolling(true);
+     }
     }
     getProfileDetails();
   },[])
@@ -76,15 +81,29 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
         handleCancel();
       }
       else{
-        console.log("Error in Updating User");
+        toast.error("Error in Updating User");
       }
       setIsSubmitting(false);
     }
-    Update();
+
+    async function Create() {
+      let data = await GetProfileService.CreateProfileDetails(profileData);
+      if(data){
+        setProfileData(data);
+        handleCancel();
+      }
+      else{
+        toast.error("Error in Creating User");
+      }
+      setIsSubmitting(false);
+    }
+
+    !isUserEnrolling ? Update() : Create();
   };
 
   const handleCancel = () => {
     if (onCancel) {
+      console.log(profileData);
       onCancel();
     } else {
       // Always navigate to the main profile route
@@ -177,8 +196,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
             name="track"
             value={profileData.track}
             onChange={(e) => setProfileData({ ...profileData, track: e.target.value })}
-            disabled={!isUserEnrolling}
-            className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow`}
             >
             {trackUi}
             </select>
@@ -193,6 +211,39 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
             onChange={handleChange}
             className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
+          </div>
+          <div className='flex w-full justify-evenly'>
+            <div className='w-full'>
+              <label className="block text-gray-400 text-sm mb-1">Year</label>
+              <button
+                type="button"
+                disabled={!isUserEnrolling}
+                className={`px-4 w-full py-2 h-10  bg-bgMainColor hover:bg-primaryYellow hover:text-black rounded-md transition-colors border border-gray-700 font-semibold 
+                ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => {
+                const nextYear = (profileData.year % 4) + 1; // Increment year and wrap around
+                setProfileData({ ...profileData, year: nextYear });
+                }}
+              >
+                {profileData.year === 1 ? '1st Year' : profileData.year === 2 ? '2nd Year' : profileData.year === 3 ? '3rd Year' : '4th Year'}
+              </button>
+            </div>
+            <div className='w-10'></div>
+            <div className='w-full'>
+              <label className="block text-gray-400 text-sm mb-1">Group</label>
+              <button
+                type="button"
+                disabled={!isUserEnrolling}
+                className={`px-4 py-2 w-full h-10 bg-bgMainColor hover:bg-primaryYellow hover:text-black rounded-md transition-colors border border-gray-700 font-semibold 
+                ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => {
+                const nextGroup = (profileData.groupId % 4) + 1; // Increment year and wrap around
+                setProfileData({ ...profileData, groupId: nextGroup });
+                }}
+              >
+                {profileData.groupId === 1 ? 'Group 1' : profileData.groupId === 2 ? 'Group 2' : profileData.groupId === 3 ? 'Group 3' : 'Group 4'}
+              </button>
+            </div>
           </div>
           </div>
         </div>
