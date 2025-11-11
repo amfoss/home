@@ -13,6 +13,7 @@ const GET_PROFILE_DETAILS = gql`
       year
       groupId
       sex
+      githubUser
       rollNo
       hostel
       email
@@ -34,6 +35,7 @@ const UPDATE_PROFILE_QUERY = gql`
       rollNo
       hostel
       email
+      githubUser
       discordId
       macAddress
     }
@@ -50,6 +52,7 @@ const CREATE_PROFILE_QUERY = gql`
       sex
       rollNo
       hostel
+      githubUser
       groupId
       email
       discordId
@@ -79,7 +82,7 @@ function cleanInput(obj: any) {
 }
 
 // Temporary until auth integration
-const test_user = 1;
+const test_user = 47;
 
 function handleApolloError(error: unknown, context: string) {
   if (error instanceof ApolloError) {
@@ -112,6 +115,26 @@ export const GetProfileService = {
       return null;
     }
   },
+  async HandleProfileImage(member:MemberProfileDetails): Promise<string> {
+  type githubRes = {
+    avatar_url:string,
+  }
+  if(!member.githubUser || member?.githubUser != "") return "";
+  try{
+    const response = await fetch("https://api.github.com/users/"+member.githubUser);
+    if(response.ok){
+      const data:githubRes =  await response.json();
+      return data.avatar_url;
+    }else{
+      console.log("Error fetching Profile Image!"+ response.status);
+      return "";
+    }
+  }catch(e){
+      console.log("Error has Occured while fetching image:",e);
+      return "";
+  }
+  },
+
 
   async UpdateProfileDetails(
     member: MemberProfileDetails

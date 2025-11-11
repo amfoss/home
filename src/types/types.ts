@@ -101,6 +101,7 @@ export type MemberProfileDetails = {
     sex: string,
     rollNo:string,
     hostel:string,
+    githubUser:string,
     email:string,
     discordId:string,
     macAddress:string

@@ -16,6 +16,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const [profileData, setProfileData] = useState<MemberProfileDetails>({
     memberId:0,
     groupId:1,
+    githubUser:"",
     year:1,
     name: "",
     rollNo: "",
@@ -48,6 +49,8 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
       const member = await GetProfileService.getProfileDetails();
      if(member){
         setProfileData(member);
+        const url = await GetProfileService.HandleProfileImage(member);
+        if(url != "") setPreviewUrl(url);
         setGenToggle([member?.sex == "M",member?.sex == "F"]);
         setIsLoading(false);
      }
@@ -58,18 +61,6 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
     }
     getProfileDetails();
   },[])
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const fileUrl = URL.createObjectURL(file);
-      setPreviewUrl(fileUrl);
-
-      // You would typically upload the image to your server here
-      // and then update the profileData with the returned URL
-      // For this demo, we'll just update the preview
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,21 +128,6 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
             alt={profileData.name}
             className={`w-32 h-32 rounded-full object-cover border-2 border-primaryYellow`}
           />
-          <label
-            htmlFor="profileImage"
-            className={`absolute bottom-0 right-0 bg-primaryYellow p-2 rounded-full cursor-pointer`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            <input
-              id="profileImage"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-          </label>
           </div>
         </div>
 
