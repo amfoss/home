@@ -92,6 +92,23 @@ export type MemberCountDetails = {
   statusUpdateCountByDate: number;
 }
 
+export type MemberProfileDetails = {
+    memberId: number,
+    year:number,
+    name:string,
+    track:string,
+    groupId:number,
+    sex: string,
+    rollNo:string,
+    hostel:string,
+    githubUser:string,
+    email:string,
+    discordId:string,
+    macAddress:string
+}
+
+
+
 export type MemberCountQueryResult = {
   allMembers: {
     memberId: string;
