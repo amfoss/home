@@ -82,7 +82,7 @@ function cleanInput(obj: any) {
 }
 
 // Temporary until auth integration
-const test_user = 47;
+const test_user = null;
 
 function handleApolloError(error: unknown, context: string) {
   if (error instanceof ApolloError) {
@@ -103,6 +103,7 @@ function handleApolloError(error: unknown, context: string) {
 
 export const GetProfileService = {
   async getProfileDetails(): Promise<MemberProfileDetails | null> {
+    if(test_user==null) return null;
     try {
       const response = await client.query<MemberResponse>({
         query: GET_PROFILE_DETAILS,
