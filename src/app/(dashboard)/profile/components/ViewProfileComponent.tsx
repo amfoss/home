@@ -1,33 +1,49 @@
 "use client";
-import React from 'react';
-
-type ProfileData = {
-  name: string;
-  email: string;
-  username: string;
-  role: string;
-  joinDate: string;
-  profileImage: string;
-  bio: string;
-}
+import React, { useEffect, useState } from 'react';
+import { GetProfileService } from '@/services/profile-services';
+import { MemberProfileDetails } from '@/types/types';
 
 type ViewProfileProps = {
   onEdit: () => void;
 }
 
 export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
-  // Mock profile data - replace with real data fetching
-  const profileData: ProfileData = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    username: "johndoe",
-    role: "Member",
-    joinDate: "Jan 2023",
-    profileImage: "/placeholder.webp",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies lacinia, nisl nisi aliquam nisl."
-  };
+  const [profileData, setProfileData] = useState<MemberProfileDetails>({
+    memberId:0,
+    groupId:1,
+    githubUser:"",
+    year:1,
+    name: "",
+    role: "",
+    rollNo: "",
+    sex: "",
+    track: "",
+    email: "",
+    hostel: '',
+    discordId: '',
+    macAddress: '',
+    createdAt: '',
+  });
+  const [previewUrl, setPreviewUrl] = useState<string>("/placeholder.webp");
+  const [isLoading, setIsLoading] = useState(true);
 
-  return (
+  useEffect(()=>{
+    async function getProfileDetails() {
+      const member = await GetProfileService.getProfileDetails();
+     if(member){
+        setProfileData(member);
+        const url = await GetProfileService.HandleProfileImage(member);
+        if(url != "") setPreviewUrl(url);
+        setIsLoading(false);
+     }
+     else {
+      setIsLoading(false);
+     }
+    }
+    getProfileDetails();
+  },[])
+
+ if (!isLoading) { return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-panelColor rounded-lg shadow-md p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
@@ -37,7 +53,7 @@ export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
             <img 
-              src={profileData.profileImage} 
+              src={previewUrl} 
               alt={profileData.name} 
               className="w-32 h-32 rounded-full object-cover border-2 border-primaryYellow"
             />
@@ -51,7 +67,7 @@ export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Username</p>
-                <p className="text-white text-lg">{profileData.username}</p>
+                <p className="text-white text-lg">{profileData.name}</p>
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Email</p>
@@ -59,17 +75,18 @@ export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Role</p>
-                <p className="text-white text-lg">{profileData.role}</p>
+                <p className="text-white text-lg">{profileData.role.toLowerCase()}</p>
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Member Since</p>
-                <p className="text-white text-lg">{profileData.joinDate}</p>
+                <p className="text-white text-lg">
+                  <p className="text-white text-lg">
+                    {new Date(profileData.createdAt).toLocaleString("en-US", { month: "short" }) +
+                      ", " +
+                      new Date(profileData.createdAt).getFullYear()}
+                  </p>
+                </p>
               </div>
-            </div>
-            
-            <div className="mt-4">
-              <p className="text-gray-400 text-sm">Bio</p>
-              <p className="text-white">{profileData.bio}</p>
             </div>
           </div>
         </div>
@@ -112,4 +129,11 @@ export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
       </div>
     </div>
   );
+}else {
+    return(
+      <div className="flex items-center justify-center w-full min-h-screen">
+        <h1 className="text-white text-lg font-medium">Loading...</h1>
+      </div>
+    )
+  }
 }

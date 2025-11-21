@@ -1,8 +1,12 @@
 "use client";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+
+const link = new HttpLink({
+  uri: "http://localhost:8000",
+  credentials: "include",
+});
 
 const client = new ApolloClient({
-  uri: "https://root.amfoss.in",
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {
@@ -15,6 +19,7 @@ const client = new ApolloClient({
       fetchPolicy: "no-cache",
     },
   },
+  link,
 });
 
 export default client;

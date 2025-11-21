@@ -98,6 +98,7 @@ export type MemberProfileDetails = {
     name:string,
     track:string,
     groupId:number,
+    role: string,
     sex: string,
     rollNo:string,
     hostel:string,
@@ -105,6 +106,7 @@ export type MemberProfileDetails = {
     email:string,
     discordId:string,
     macAddress:string
+    createdAt: string,
 }
 
 
