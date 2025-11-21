@@ -5,8 +5,8 @@ import toast from "react-hot-toast";
 import { MemberProfileDetails } from "@/types/types";
 
 const GET_PROFILE_DETAILS = gql`
-  query getuser($id: Int) {
-    member(memberId: $id) {
+  query getuser {
+    me {
       memberId
       name
       track
@@ -27,8 +27,7 @@ const GET_PROFILE_DETAILS = gql`
 
 const UPDATE_PROFILE_QUERY = gql`
   mutation ($member: UpdateMemberInput!) {
-    updateMember(input: $member) {
-      memberId
+    updateMe(input: $member) {
       name
       track
       year
@@ -45,11 +44,11 @@ const UPDATE_PROFILE_QUERY = gql`
 `;
 
 type MemberResponse = {
-  member: MemberProfileDetails;
+  me: MemberProfileDetails;
 };
 
 type MemberUpdateResponse = {
-  updateMember: MemberProfileDetails;
+  updateMe: MemberProfileDetails;
 };
 
 function cleanInput(obj: any) {
@@ -59,9 +58,6 @@ function cleanInput(obj: any) {
   });
   return cleaned;
 }
-
-// Temporary until auth integration
-const test_user = 1;
 
 function handleApolloError(error: unknown, context: string) {
   if (error instanceof ApolloError) {
@@ -82,14 +78,12 @@ function handleApolloError(error: unknown, context: string) {
 
 export const GetProfileService = {
   async getProfileDetails(): Promise<MemberProfileDetails | null> {
-    if (test_user == null) return null;
     try {
       const response = await client.query<MemberResponse>({
         query: GET_PROFILE_DETAILS,
-        variables: { id: test_user },
         fetchPolicy: "no-cache",
       });
-      return response.data.member;
+      return response.data.me;
     } catch (error) {
       handleApolloError(error, "getProfileDetails");
       return null;
@@ -112,21 +106,22 @@ export const GetProfileService = {
         return "";
       }
     } catch (e) {
-      console.log("Error has Occured while fetching image:", e);
+      console.log("Error has Occurred while fetching image:", e);
       return "";
     }
   },
 
   async UpdateProfileDetails(
-    member: MemberProfileDetails,
+    member: MemberProfileDetails
   ): Promise<MemberProfileDetails | null> {
-    const cleanedMember = cleanInput({ ...member, memberId: test_user });
+    const { memberId, role, createdAt, ...updateData } = member;
+    const cleanedMember = cleanInput({ ...updateData });
     try {
       const response = await client.mutate<MemberUpdateResponse>({
         mutation: UPDATE_PROFILE_QUERY,
         variables: { member: cleanedMember },
       });
-      return response.data ? response.data.updateMember : null;
+      return response.data ? response.data.updateMe : null;
     } catch (error) {
       handleApolloError(error, "UpdateProfileDetails");
       return null;

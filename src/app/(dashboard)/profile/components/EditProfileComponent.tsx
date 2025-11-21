@@ -14,12 +14,13 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const router = useRouter();
 
   const [profileData, setProfileData] = useState<MemberProfileDetails>({
-    memberId:0,
+    memberId: 0,
+    role: '',
+    createdAt: '',
     groupId:1,
     githubUser:"",
     year:1,
     name: "",
-    role: "",
     rollNo: "",
     sex: "",
     track: "",
@@ -27,7 +28,6 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
     hostel: '',
     discordId: '',
     macAddress: '',
-    createdAt: ''
   });
   const tracks = ['Web', 'Systems', 'AI', 'Mobile'];
 
@@ -54,7 +54,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
         const url = await GetProfileService.HandleProfileImage(member);
         if(url != "") setPreviewUrl(url);
         setIsLoading(false);
-        if (!member.sex) {
+        if (!member.rollNo) { // if rollNo is not set, it implies that the user has not updated their profile yet
           setUserEnrolling(true);
           return
         }
