@@ -5,12 +5,13 @@ import toast from "react-hot-toast";
 import { MemberProfileDetails } from "@/types/types";
 
 const GET_PROFILE_DETAILS = gql`
-  query getuser($id: Int) {
-    member(memberId: $id) {
+  query getuser {
+    me {
       memberId
       name
       track
       year
+      role
       groupId
       sex
       githubUser
@@ -19,14 +20,14 @@ const GET_PROFILE_DETAILS = gql`
       email
       discordId
       macAddress
+      createdAt
     }
   }
 `;
 
 const UPDATE_PROFILE_QUERY = gql`
   mutation ($member: UpdateMemberInput!) {
-    updateMember(input: $member) {
-      memberId
+    updateMe(input: $member) {
       name
       track
       year
@@ -36,25 +37,6 @@ const UPDATE_PROFILE_QUERY = gql`
       hostel
       email
       githubUser
-      discordId
-      macAddress
-    }
-  }
-`;
-
-const CREATE_PROFILE_QUERY = gql`
-  mutation ($member: CreateMemberInput!) {
-    createMember(input: $member) {
-      memberId
-      name
-      track
-      year
-      sex
-      rollNo
-      hostel
-      githubUser
-      groupId
-      email
       discordId
       macAddress
     }
@@ -62,15 +44,11 @@ const CREATE_PROFILE_QUERY = gql`
 `;
 
 type MemberResponse = {
-  member: MemberProfileDetails;
+  me: MemberProfileDetails;
 };
 
 type MemberUpdateResponse = {
-  updateMember: MemberProfileDetails;
-};
-
-type MemberCreateResponse = {
-  createMember: MemberProfileDetails;
+  updateMe: MemberProfileDetails;
 };
 
 function cleanInput(obj: any) {
@@ -81,13 +59,10 @@ function cleanInput(obj: any) {
   return cleaned;
 }
 
-// Temporary until auth integration
-const test_user = null;
-
 function handleApolloError(error: unknown, context: string) {
   if (error instanceof ApolloError) {
     if (error.graphQLErrors.length > 0) {
-      const gqlMessage = error.graphQLErrors.map(e => e.message).join(", ");
+      const gqlMessage = error.graphQLErrors.map((e) => e.message).join(", ");
       console.error(`[GraphQL Error] (${context}):`, gqlMessage);
       toast.error(`GraphQL Error: ${gqlMessage}`);
     }
@@ -103,70 +78,52 @@ function handleApolloError(error: unknown, context: string) {
 
 export const GetProfileService = {
   async getProfileDetails(): Promise<MemberProfileDetails | null> {
-    if(test_user==null) return null;
     try {
       const response = await client.query<MemberResponse>({
         query: GET_PROFILE_DETAILS,
-        variables: { id: test_user },
         fetchPolicy: "no-cache",
       });
-      return response.data.member;
+      return response.data.me;
     } catch (error) {
       handleApolloError(error, "getProfileDetails");
       return null;
     }
   },
-  async HandleProfileImage(member:MemberProfileDetails): Promise<string> {
-  type githubRes = {
-    avatar_url:string,
-  }
-  if(!member.githubUser || member?.githubUser != "") return "";
-  try{
-    const response = await fetch("https://api.github.com/users/"+member.githubUser);
-    if(response.ok){
-      const data:githubRes =  await response.json();
-      return data.avatar_url;
-    }else{
-      console.log("Error fetching Profile Image!"+ response.status);
+  async HandleProfileImage(member: MemberProfileDetails): Promise<string> {
+    type githubRes = {
+      avatar_url: string;
+    };
+    if (!member.githubUser || member?.githubUser != "") return "";
+    try {
+      const response = await fetch(
+        "https://api.github.com/users/" + member.githubUser,
+      );
+      if (response.ok) {
+        const data: githubRes = await response.json();
+        return data.avatar_url;
+      } else {
+        console.log("Error fetching Profile Image!" + response.status);
+        return "";
+      }
+    } catch (e) {
+      console.log("Error has Occurred while fetching image:", e);
       return "";
     }
-  }catch(e){
-      console.log("Error has Occured while fetching image:",e);
-      return "";
-  }
   },
-
 
   async UpdateProfileDetails(
     member: MemberProfileDetails
   ): Promise<MemberProfileDetails | null> {
-    const cleanedMember = cleanInput({ ...member, memberId: test_user });
+    const { memberId, role, createdAt, ...updateData } = member;
+    const cleanedMember = cleanInput({ ...updateData });
     try {
       const response = await client.mutate<MemberUpdateResponse>({
         mutation: UPDATE_PROFILE_QUERY,
         variables: { member: cleanedMember },
       });
-      return response.data ? response.data.updateMember : null;
+      return response.data ? response.data.updateMe : null;
     } catch (error) {
       handleApolloError(error, "UpdateProfileDetails");
-      return null;
-    }
-  },
-
-  async CreateProfileDetails(
-    member: MemberProfileDetails
-  ): Promise<MemberProfileDetails | null> {
-    const { memberId, ...rest } = member;
-    const cleanedMember = cleanInput(rest);
-
-    try {
-      const response = await client.mutate<MemberCreateResponse>({
-        mutation: CREATE_PROFILE_QUERY,
-        variables: { member: cleanedMember },
-      });
-      return response.data ? response.data.createMember : null;
-    } catch (error) {
-      handleApolloError(error, "CreateProfileDetails");
       return null;
     }
   },

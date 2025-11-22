@@ -14,7 +14,9 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const router = useRouter();
 
   const [profileData, setProfileData] = useState<MemberProfileDetails>({
-    memberId:0,
+    memberId: 0,
+    role: '',
+    createdAt: '',
     groupId:1,
     githubUser:"",
     year:1,
@@ -51,12 +53,15 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
         setProfileData(member);
         const url = await GetProfileService.HandleProfileImage(member);
         if(url != "") setPreviewUrl(url);
-        setGenToggle([member?.sex == "M",member?.sex == "F"]);
         setIsLoading(false);
+        if (!member.rollNo) { // if rollNo is not set, it implies that the user has not updated their profile yet
+          setUserEnrolling(true);
+          return
+        }
+        setGenToggle([member?.sex == "M",member?.sex == "F"]);
      }
      else {
       setIsLoading(false);
-      setUserEnrolling(true);
      }
     }
     getProfileDetails();
@@ -65,31 +70,15 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    async function Update() {
-      let data = await GetProfileService.UpdateProfileDetails(profileData);
-      if(data){
-        setProfileData(data);
-        handleCancel();
-      }
-      else{
-        toast.error("Error in Updating User");
-      }
-      setIsSubmitting(false);
+    let data = await GetProfileService.UpdateProfileDetails(profileData);
+    if(data){
+      setProfileData(data);
+      handleCancel();
     }
-
-    async function Create() {
-      let data = await GetProfileService.CreateProfileDetails(profileData);
-      if(data){
-        setProfileData(data);
-        handleCancel();
-      }
-      else{
-        toast.error("Error in Creating User");
-      }
-      setIsSubmitting(false);
+    else{
+      toast.error("Error in Updating User");
     }
-
-    !isUserEnrolling ? Update() : Create();
+    setIsSubmitting(false);
   };
 
   const handleCancel = () => {
@@ -172,7 +161,8 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
             name="track"
             value={profileData.track}
             onChange={(e) => setProfileData({ ...profileData, track: e.target.value })}
-            className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow`}
+            disabled={!isUserEnrolling}
+            className={`w-full px-3 py-2 bg-bgMainColor text-white border border-gray-700 rounded-md focus:outline-none focus:border-primaryYellow ${!isUserEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
             {trackUi}
             </select>

@@ -20,7 +20,7 @@ export default function Home() {
         <p className="absolute lg:top-[45vh] md:top-[35vh] sm:top-[42.5vh] left-[0vw] w-[100vw] animate-fadeInUp lg:text-[3vw] md:text-[6vw] sm:text-[7vw] text-white font-bold opacity-0" style={{ textAlign: "center" }}>India's Leading FOSS Club</p>
         <Image className="absolute animate-fadeInUp lg:max-w-[20vw] md:max-w-[40vw] sm:max-w-[43vw] lg:left-[40vw] md:left-[30vw] sm:left-[28vw] lg:top-[52.5vh] sm:top-[48.3vh] opacity-0" src={amfoss} alt="amfoss" />
         <Link 
-          href="/dashboard" 
+          href="https://root.amfoss.in/auth/github"
           className="absolute animate-fadeInUp text-center font-semibold text-black 
                     lg:px-6 md:px-5 sm:px-4 lg:py-3 md:py-2.5 sm:py-2
                     lg:text-xl md:text-lg sm:text-base
