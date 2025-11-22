@@ -2,7 +2,7 @@
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 
 const link = new HttpLink({
-  uri: "http://root.amfoss.in",
+  uri: "https://root.amfoss.in",
   credentials: "include",
 });
 
