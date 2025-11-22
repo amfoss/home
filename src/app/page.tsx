@@ -33,7 +33,7 @@ export default function Home() {
                     flex items-center justify-center gap-3"
         >
           <Github className="lg:w-6 lg:h-6 md:w-5 md:h-5 sm:w-4 sm:h-4 flex-shrink-0" />
-          <span className="whitespace-nowrap">Sign in (Coming Soon)</span>
+          <span className="whitespace-nowrap">Sign in</span>
         </Link>
         
         </div>
