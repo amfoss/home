@@ -29,7 +29,7 @@ export default function EditProfileComponent({ onCancel }: EditProfileProps) {
     discordId: '',
     macAddress: '',
   });
-  const tracks = ['Web', 'Systems', 'AI', 'Mobile'];
+  const tracks = ['Web', 'Systems', 'AI', 'Mobile', 'Inductee'];
 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
