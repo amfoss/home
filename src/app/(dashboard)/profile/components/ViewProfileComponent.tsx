@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { GetProfileService } from '@/services/profile-services';
 import { MemberProfileDetails } from '@/types/types';
 
@@ -52,10 +53,12 @@ export default function ViewProfileComponent({ onEdit }: ViewProfileProps) {
         
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
-            <img 
+            <Image 
               src={previewUrl} 
-              alt={profileData.name} 
-              className="w-32 h-32 rounded-full object-cover border-2 border-primaryYellow"
+              alt={profileData.name || 'Profile picture'} 
+              width={128}
+              height={128}
+              className="rounded-full object-cover border-2 border-primaryYellow"
             />
           </div>
           

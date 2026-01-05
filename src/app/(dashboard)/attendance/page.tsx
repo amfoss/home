@@ -72,7 +72,7 @@ export default function Page() {
     setSelectedDate(date);
   }, []);
 
-  const timeStringToMS = React.useCallback((timeString: any) => {
+  const timeStringToMS = React.useCallback((timeString: string | null | undefined): number | null => {
     if (!timeString) return null;
     try {
       const parts = timeString.split(":");
@@ -129,14 +129,14 @@ export default function Page() {
     const late = minimumTime + LATE_THRESHOLD_MS;
     console.log("Late threshold set at:", new Date(late).toISOString());
     return late;
-  }, [minimumTime]);
+  }, [minimumTime, LATE_THRESHOLD_MS]);
 
   // Memoize the filtered member arrays to avoid recalculating on every render
   const { absentMembers, presentMembers, lateMembers, filteredData } = useMemo(() => {
     // First, separate present and absent members
-    const absent = attendanceData.filter(member => !member.isPresent);
-    let present = [];
-    let late = [];
+  const absent = attendanceData.filter(member => !member.isPresent);
+  let present = [];
+  const late = [];
     
     // Only process present members if we have a valid late threshold
     if (lateTime !== null) {
