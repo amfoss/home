@@ -6,7 +6,6 @@ import toast from 'react-hot-toast'
 import {
   AllMembersAttendanceResponse,
   AttendanceDetails,
-  Member
 } from "@/types/types";
 
 

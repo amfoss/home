@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { GetProfileService } from '@/services/profile-services';
 import { MemberProfileDetails } from '@/types/types';
 import toast from 'react-hot-toast';
@@ -97,7 +98,7 @@ export default function EditProfileComponent({ onCancel, initialData, initialEnr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    let data = await GetProfileService.UpdateProfileDetails(profileData);
+  const data = await GetProfileService.UpdateProfileDetails(profileData);
     if (data) {
       setProfileData(data);
       handleCancel();
@@ -139,10 +140,12 @@ export default function EditProfileComponent({ onCancel, initialData, initialEnr
             <div className="flex flex-col md:flex-row gap-6 mb-6">
               <div className="flex-shrink-0">
                 <div className="relative">
-                  <img
+                  <Image
                     src={previewUrl}
-                    alt={profileData.name}
-                    className={`w-32 h-32 rounded-full object-cover border-2 border-primaryYellow`}
+                    alt={profileData.name || 'Profile picture'}
+                    width={128}
+                    height={128}
+                    className="rounded-full object-cover border-2 border-primaryYellow"
                   />
                 </div>
               </div>

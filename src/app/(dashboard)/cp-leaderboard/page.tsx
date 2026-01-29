@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-import {Profile,ProfileBottom} from "@/components/LeaderBoardProfiles"
+import { Profile } from "@/components/LeaderBoardProfiles"
 import dynamic from 'next/dynamic';
 
 const LeaderboardTable = dynamic(() => import("@/components/LeaderboardTable"), {

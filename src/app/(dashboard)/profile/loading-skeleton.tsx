@@ -1,8 +1,6 @@
 import React from "react";
 
-type LoadingProfileSkeletonProps = {}
-
-export const LoadingProfileSkeleton: React.FC<LoadingProfileSkeletonProps> = () => {
+export const LoadingProfileSkeleton: React.FC = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-panelColor rounded-lg shadow-md p-6 mb-6">

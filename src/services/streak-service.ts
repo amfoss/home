@@ -1,6 +1,6 @@
 import client from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { MemberDetails, EnrichedMemberData, MemberCountDetails, MemberCountQueryResult } from "@/types/types";
+import { MemberCountDetails, MemberCountQueryResult } from "@/types/types";
 
 
 
@@ -102,7 +102,7 @@ export const DashboardService = {
     // Dummy implementation for attendance counts
   async getAttendanceCounts(
     startDate: string,
-    endDate: string
+    _endDate: string
   ): Promise<{ date: string; count: number }[]> {
     // Generate 7 days of dummy data
     const start = new Date(startDate);

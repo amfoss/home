@@ -78,7 +78,7 @@ const getMonthDateRange = (monthOffset: number) => {
 };
 
 const padRecordsForMonth = (records: boolean[], monthOffset: number): boolean[] => {
-    const { startDate, endDate } = getMonthDateRange(monthOffset);
+    const { endDate } = getMonthDateRange(monthOffset);
     const daysInMonth = endDate.getDate();
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -112,7 +112,7 @@ const MemberDetails = () => {
     const router = useRouter();
     const { memberId } = useParams(); 
     const [memberDetails, setMemberDetails] = useState<MemberInfo | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [monthlyAttendanceRecords, setMonthlyAttendanceRecords] = useState<boolean[][]>([]);
     const [monthlyStatusRecords, setMonthlyStatusRecords] = useState<boolean[][]>([]);
@@ -228,14 +228,14 @@ const MemberDetails = () => {
                             const monthOffset = -(monthsToDisplay - 1) + index;
 
                             if (attendanceRes.data?.member?.attendance?.records) {
-                                const records = attendanceRes.data.member.attendance.records.map((r: any) => r.isPresent);
+                                const records = attendanceRes.data.member.attendance.records.map((r: { isPresent: boolean }) => r.isPresent);
                                 attendanceByMonth.push(padRecordsForMonth(records, monthOffset));
                             } else {
                                 attendanceByMonth.push([]);
                             }
 
                             if (statusRes.data?.member?.status?.records) {
-                                const records = statusRes.data.member.status.records.map((r: any) => r.isSent);
+                                const records = statusRes.data.member.status.records.map((r: { isSent: boolean }) => r.isSent);
                                 statusByMonth.push(padRecordsForMonth(records, monthOffset));
                             } else {
                                 statusByMonth.push([]);
@@ -246,21 +246,26 @@ const MemberDetails = () => {
                         setMonthlyStatusRecords(statusByMonth);
 
                         if (leaderboardResponse.data?.allMembers) {
-                            const membersWithScores = leaderboardResponse.data.allMembers.map((member: any) => ({
+                            const membersWithScores = leaderboardResponse.data.allMembers.map((member: {
+                                memberId: number;
+                                name: string;
+                                attendance: { presentCount: number };
+                                status: { updateCount: number };
+                            }) => ({
                                 memberId: member.memberId,
                                 name: member.name,
                                 score: member.attendance.presentCount * 10 + member.status.updateCount * 5,
                             }));
 
-                            membersWithScores.sort((a: any, b: any) => b.score - a.score);
+                            membersWithScores.sort((a: { score: number }, b: { score: number }) => b.score - a.score);
 
-                            const rankedMembers = membersWithScores.map((member: any, index: number) => ({
+                            const rankedMembers = membersWithScores.map((member: { memberId: number; name: string; score: number }, index: number) => ({
                                 ...member,
                                 rank: index + 1,
                                 isCurrentUser: member.memberId === memberIdInt,
                             }));
 
-                            const currentUser = rankedMembers.find((m: any) => m.memberId === memberIdInt);
+                            const currentUser = rankedMembers.find((m: { memberId: number }) => m.memberId === memberIdInt);
 
                             if (currentUser) {
                                 setLeaderboardData({

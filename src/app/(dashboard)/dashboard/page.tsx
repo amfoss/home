@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Calendar from "@/components/Calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/Card";
 import { ChartLine, Search } from "lucide-react";
@@ -32,7 +32,16 @@ export default function Page() {
     const [error, setError] = useState<string | null>(null);
     const [selected, setSelected] = useState<string>("attendance");
     const [memberSummary, setMemberSummary] = useState<{
-        enrichedData: any[];
+        enrichedData: Array<{
+            id: string;
+            name: string;
+            year: string;
+            attendanceRatio?: number;
+            statusUpdateCountByDate?: number;
+            presentCountByDate?: number;
+            absentCountByDate?: number;
+            attendanceMonth?: string;
+        }>;
         topAttendance: { memberName: string; attendanceRatio: string };
         topStatusUpdate: { memberName: string; statusRatio: string };
     }>({
@@ -41,7 +50,7 @@ export default function Page() {
         topStatusUpdate: { memberName: "Unknown", statusRatio: "0%" }
     });
 
-    const fetchAndProcessAllMemberData = async () => {
+    const fetchAndProcessAllMemberData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -109,8 +118,9 @@ export default function Page() {
             console.error("Error processing member data:", error);
             setLoading(false);
         }
-    };
-    const fetchAttendanceCount = async () => {
+    }, [selectedDate]);
+
+    const fetchAttendanceCount = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -147,13 +157,13 @@ export default function Page() {
 
             setLabels(dateLabels);
             setAttendanceData(attendanceCounts);
-        } catch (err) {
+        } catch {
             setError("Failed to fetch attendance data.");
             setAttendanceData(new Array(7).fill(0));
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedDate]);
 
     const chartOptions = {
         responsive: true,
@@ -204,14 +214,14 @@ export default function Page() {
     useEffect(() => {
         fetchAttendanceCount();
         fetchAndProcessAllMemberData();
-    }, [selectedDate]);
+    }, [selectedDate, fetchAttendanceCount, fetchAndProcessAllMemberData]);
 
     const formatDate = (date: Date): string => {
         const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" };
         return date.toLocaleDateString("en-US", options);
     };
 
-    const navigateToMemberDetails = (member: any) => {
+    const navigateToMemberDetails = (member: { id: string; name: string }) => {
         router.push(`/dashboard/${member.id}`);
     };
 

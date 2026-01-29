@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import icon from "@/../public/amfoss-logo-white-square.png";
 
 export const siteMetadata: Metadata = {
+  metadataBase: new URL('https://home.amfoss.in'),
   title: 'amFOSS - Home Portal',
   description: 'Official home portal for amFOSS (FOSS@Amrita), a student-run Free and Open Source Software club at Amrita Vishwa Vidyapeetham. Access member profiles, attendance tracking, leaderboards, and club resources.',
   keywords: [

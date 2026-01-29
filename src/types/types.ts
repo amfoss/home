@@ -1,8 +1,8 @@
 // Type for the AttendanceDetails object returned by the query
 export type AttendanceDetails = {
   member: Member;
-  timeIn: any;
-  timeOut: any;
+  timeIn: string | null;
+  timeOut: string | null;
   isPresent: boolean;
 };
 

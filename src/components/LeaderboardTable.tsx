@@ -1,11 +1,11 @@
-import { Trophy, Medal, Award, Icon } from "lucide-react";
+import { Trophy, Medal, Award } from "lucide-react";
 
 
 type LeaderboardTableProps = {
     isAllTime?: boolean;
 }
 
-export default function LeaderboardTable({ isAllTime = false }: LeaderboardTableProps) {
+export default function LeaderboardTable({ isAllTime: _isAllTime = false }: LeaderboardTableProps) {
     const placeholderlist = ["Player 1","Player 2","Player 3","Player 4","Player 5"]
     const players = placeholderlist.map((item,index)=>{
         let col="";

@@ -51,8 +51,8 @@ type MemberUpdateResponse = {
   updateMe: MemberProfileDetails;
 };
 
-function cleanInput(obj: any) {
-  const cleaned: any = {};
+function cleanInput(obj: Record<string, unknown>) {
+  const cleaned: Record<string, unknown> = {};
   Object.keys(obj).forEach((key) => {
     if (key !== "__typename") cleaned[key] = obj[key];
   });
@@ -114,7 +114,7 @@ export const GetProfileService = {
   async UpdateProfileDetails(
     member: MemberProfileDetails
   ): Promise<MemberProfileDetails | null> {
-    const { memberId, role, createdAt, ...updateData } = member;
+    const { memberId: _memberId, role: _role, createdAt: _createdAt, ...updateData } = member;
     const cleanedMember = cleanInput({ ...updateData });
     try {
       const response = await client.mutate<MemberUpdateResponse>({

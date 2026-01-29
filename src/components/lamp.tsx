@@ -2,7 +2,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import styles from "../styles/Home.module.css"
 
 export const LampContainer = ({
   className,
