@@ -135,7 +135,7 @@ export default function Page() {
   const { absentMembers, presentMembers, lateMembers, filteredData } = useMemo(() => {
     // First, separate present and absent members
   const absent = attendanceData.filter(member => !member.isPresent);
-  let present = [];
+  let present: AttendanceDetails[] = [];
   const late = [];
     
     // Only process present members if we have a valid late threshold
