@@ -35,15 +35,39 @@ export const AttendanceDetailRow: React.FC<AttendanceDetailRowProps> = ({
                 </div>
 
                 {loading ? (
-                    <div className="text-center p-4 overflow-hidden text-offWhite">Loading...</div>
+                    <div className="flex flex-col w-full">
+                        {[...Array(8)].map((_, index) => (
+                            <div
+                                key={index}
+                                className="flex min-w-full p-2 items-center animate-pulse"
+                            >
+                                <div className="min-w-[8.5rem] basis-2/5 px-4">
+                                    <div className="h-5 bg-gray-700 rounded-md w-3/4 shimmer"></div>
+                                </div>
+                                <div className="min-w-[8.5rem] basis-1/5 px-4">
+                                    <div className="h-5 bg-gray-700 rounded-md w-12 mx-auto shimmer"></div>
+                                </div>
+                                {complete && (
+                                    <>
+                                        <div className="min-w-[8.5rem] basis-1/5 px-4">
+                                            <div className="h-5 bg-gray-700 rounded-md w-20 mx-auto shimmer"></div>
+                                        </div>
+                                        <div className="min-w-[8.5rem] basis-1/5 px-4">
+                                            <div className="h-5 bg-gray-700 rounded-md w-20 mx-auto shimmer"></div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 ) : error ? (
                     <div className="text-center p-4 text-red-500">{error}</div>
                 ) : attendanceData.length > 0 ? (
                     attendanceData.map((attendance, index) => (
                         <div
-                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent 
-                                ? "text-offWhite" 
-                                : "text-red-500" 
+                            className={`flex min-w-full p-2 text-center items-center font-bold ${attendance.isPresent
+                                ? "text-offWhite"
+                                : "text-red-500"
                                 }`}
                             key={index}
                             aria-label={`Attendance record for ${attendance.member.name}`}

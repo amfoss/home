@@ -61,3 +61,25 @@ li span {
     background: #444;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    to right,
+    #374151 0%,
+    #4b5563 20%,
+    #6b7280 40%,
+    #4b5563 60%,
+    #374151 100%
+  );
+  background-size: 2000px 100%;
+}

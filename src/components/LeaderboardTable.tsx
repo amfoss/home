@@ -3,12 +3,13 @@ import { Trophy, Medal, Award } from "lucide-react";
 
 type LeaderboardTableProps = {
     isAllTime?: boolean;
+    loading?: boolean;
 }
 
-export default function LeaderboardTable({ isAllTime: _isAllTime = false }: LeaderboardTableProps) {
-    const placeholderlist = ["Player 1","Player 2","Player 3","Player 4","Player 5"]
-    const players = placeholderlist.map((item,index)=>{
-        let col="";
+export default function LeaderboardTable({ isAllTime: _isAllTime = false, loading = false }: LeaderboardTableProps) {
+    const placeholderlist = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5"]
+    const players = placeholderlist.map((item, index) => {
+        let col = "";
         let icon = <div className="w-5 h-5" />;
         if (index == 0) {
             col = "bg-LeaderBoardGold";
@@ -22,38 +23,61 @@ export default function LeaderboardTable({ isAllTime: _isAllTime = false }: Lead
         } else {
             col = "bg-LeaderBoardCommon hover:bg-LeaderBoardCommonHigh";
         }
-        return(
+        return (
             <div
-            key={index}
-            className={`${col}  rounded-md transition-transform duration-300 ease-in-out transform hover:scale-105`}
-        >
-            <div className="h-10 flex items-center justify-evenly rounded-md px-4">
-            <p className="w-1/3 text-center text-white flex items-center justify-center gap-2 mr-3">
-                <Award className="w-5 h-5" /> {index}
-            </p>
-            <p className="w-1/3 text-center text-white">{item}</p>
-            <div className="w-1/3 text-center text-white flex items-center justify-center gap-2 ml-4">
-                {icon}
-                <p>{index * 1000}</p>
+                key={index}
+                className={`${col}  rounded-md transition-transform duration-300 ease-in-out transform hover:scale-105`}
+            >
+                <div className="h-10 flex items-center justify-evenly rounded-md px-4">
+                    <p className="w-1/3 text-center text-white flex items-center justify-center gap-2 mr-3">
+                        <Award className="w-5 h-5" /> {index}
+                    </p>
+                    <p className="w-1/3 text-center text-white">{item}</p>
+                    <div className="w-1/3 text-center text-white flex items-center justify-center gap-2 ml-4">
+                        {icon}
+                        <p>{index * 1000}</p>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
         );
     })
-return (
-    <div className="w-full flex flex-col items-center  rounded-lg">
-    <div className="w-[90%] sm:max-h-[400px] lg:max-h-[800px] overflow-y-auto  rounded-lg">
-        <table className="sticky top-0 z-40 w-full text-white border-collapse">
-        <thead className="bg-LeaderBoardHead">
-            <tr className="text-left ">
-            <th className="px-4 py-2 text-center w-1/3">Rank</th>
-            <th className="px-4 py-2 text-center w-1/3">Name</th>
-            <th className="px-4 py-2 text-center w-1/3">Points</th>
-            </tr>
-        </thead>
-        </table>
-        <div className="w-full flex flex-col gap-1 p-2">{players}</div>
-    </div>
-    </div>
-);
+    return (
+        <div className="w-full flex flex-col items-center  rounded-lg">
+            <div className="w-[90%] sm:max-h-[400px] lg:max-h-[800px] overflow-y-auto  rounded-lg">
+                <table className="sticky top-0 z-40 w-full text-white border-collapse">
+                    <thead className="bg-LeaderBoardHead">
+                        <tr className="text-left ">
+                            <th className="px-4 py-2 text-center w-1/3">Rank</th>
+                            <th className="px-4 py-2 text-center w-1/3">Name</th>
+                            <th className="px-4 py-2 text-center w-1/3">Points</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div className="w-full flex flex-col gap-1 p-2">
+                    {loading ? (
+                        [...Array(8)].map((_, index) => (
+                            <div
+                                key={index}
+                                className="bg-LeaderBoardCommon rounded-md animate-pulse"
+                            >
+                                <div className="h-10 flex items-center justify-evenly rounded-md px-4">
+                                    <div className="w-1/3 flex items-center justify-center gap-2 mr-3">
+                                        <div className="h-5 bg-gray-700 rounded-md w-16 shimmer"></div>
+                                    </div>
+                                    <div className="w-1/3 flex items-center justify-center">
+                                        <div className="h-5 bg-gray-700 rounded-md w-32 shimmer"></div>
+                                    </div>
+                                    <div className="w-1/3 flex items-center justify-center gap-2 ml-4">
+                                        <div className="h-5 bg-gray-700 rounded-md w-20 shimmer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        players
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
