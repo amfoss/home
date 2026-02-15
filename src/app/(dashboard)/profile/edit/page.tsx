@@ -62,7 +62,7 @@ export default function EditProfilePage() {
           setUserEnrolling(true);
           toast.success("Setting up your profile for the first time");
         }
-      } catch (error) {
+      } catch {
         toast.error("Failed to load profile data");
       } finally {
         setIsLoading(false);

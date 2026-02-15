@@ -57,7 +57,7 @@ export default function Page() {
         );
         setAttendanceData(data);
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError("Failed to fetch attendance data");
         setLoading(false);
       }
@@ -89,7 +89,7 @@ export default function Page() {
 
       const timeInMS = (min * 60 + hours * 3600 + seconds) * 1000 + milliSeconds;
       return timeInMS;
-    } catch (error) {
+    } catch {
       return null;
     }
   }, []);

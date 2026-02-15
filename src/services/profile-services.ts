@@ -104,7 +104,7 @@ export const GetProfileService = {
       } else {
         return "";
       }
-    } catch (e) {
+    } catch {
       return "";
     }
   },

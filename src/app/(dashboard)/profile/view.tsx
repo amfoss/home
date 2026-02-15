@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import client from '@/lib/apollo-client';
 import { gql } from '@apollo/client';
 import toast from 'react-hot-toast';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { Edit } from 'lucide-react';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { LeaderboardStats } from '@/components/profile/LeaderboardStats';
 import { MonthlyStats } from '@/components/profile/MonthlyStats';
