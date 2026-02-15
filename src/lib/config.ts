@@ -4,22 +4,14 @@
  */
 
 export const config = {
-  /**
-   * Backend API URL
-   * Change this to switch between development and production
-   */
-  backendUrl: "http://localhost:8000",
+  backendUrl: process.env.NODE_ENV === "production" 
+    ? "https://root.amfoss.in" 
+    : "http://localhost:8000",
 
-  /**
-   * GraphQL endpoint
-   */
   get graphqlUrl() {
     return `${this.backendUrl}/graphiql`;
   },
 
-  /**
-   * GitHub OAuth redirect URL
-   */
   get githubAuthUrl() {
     return `${this.backendUrl}/auth/github`;
   },
