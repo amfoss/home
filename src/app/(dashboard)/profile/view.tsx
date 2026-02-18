@@ -293,7 +293,6 @@ const ProfileView = ({ mode }: ProfileViewProps) => {
                     toast.error('Profile not found');
                 }
             } catch (err) {
-                console.error('Error fetching profile details:', err);
                 setError('Failed to fetch profile details');
                 toast.error('Failed to fetch profile details');
             }
@@ -381,12 +380,12 @@ const ProfileView = ({ mode }: ProfileViewProps) => {
                     ) : (
                         <ProfileCard
                             name=""
-                            githubUser=""
+                            githubUser={null}
                             createdAt=""
-                            track=""
+                            track={null}
                             hostel=""
                             email=""
-                            discordId=""
+                            discordId={null}
                             loading={true}
                         />
                     )}

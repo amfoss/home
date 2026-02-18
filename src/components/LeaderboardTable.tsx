@@ -11,13 +11,13 @@ export default function LeaderboardTable({ isAllTime: _isAllTime = false, loadin
     const players = placeholderlist.map((item, index) => {
         let col = "";
         let icon = <div className="w-5 h-5" />;
-        if (index == 0) {
+        if (index === 0) {
             col = "bg-LeaderBoardGold";
             icon = <Trophy className="w-5 h-5" />;
-        } else if (index == 1) {
+        } else if (index === 1) {
             col = "bg-LeaderBoardSilver";
             icon = <Medal className="w-5 h-5" />;
-        } else if (index == 2) {
+        } else if (index === 2) {
             col = "bg-LeaderBoardBronze";
             icon = <Medal className="w-5 h-5" />;
         } else {

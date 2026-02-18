@@ -51,16 +51,11 @@ export default function Page() {
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
-      try {
-        const data = await AttendanceService.getAttendanceDetails(
-          selectedDate.toISOString().split("T")[0]
-        );
-        setAttendanceData(data);
-        setLoading(false);
-      } catch {
-        setError("Failed to fetch attendance data");
-        setLoading(false);
-      }
+      const data = await AttendanceService.getAttendanceDetails(
+        selectedDate.toISOString().split("T")[0]
+      );
+      setAttendanceData(data);
+      setLoading(false);
     };
     fetchAttendanceData();
   }, [selectedDate]);
@@ -104,7 +99,7 @@ export default function Page() {
 
     for (const member of presentMembersOnly) {
       const memberTimeInMS = timeStringToMS(member.timeIn);
-      if (memberTimeInMS != null) {
+      if (memberTimeInMS !== null) {
         if (memberTimeInMS < minTime) minTime = memberTimeInMS;
         foundAtLeastOneValidTime = true;
       }

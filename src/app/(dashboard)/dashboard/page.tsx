@@ -485,7 +485,7 @@ export default function Page() {
                     <CardContent
                         className="pt-5 overflow-x-scroll">
                         <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[600px] md:overflow-x-hidden">
-                            <div className="grid grid-cols-5 items-center w-full text-white font-bold py-2 overflow-x-scroll">
+                            <div className="grid grid-cols-4 items-center w-full text-white font-bold py-2 overflow-x-scroll">
                                 <div
                                     className="text-left px-10 cursor-pointer hover:text-primaryYellow transition-colors"
                                     onClick={() => setSortBy("name")}
@@ -507,7 +507,7 @@ export default function Page() {
                             {loading ? (
                                 <div className="flex flex-col w-full">
                                     {[...Array(8)].map((_, index) => (
-                                        <div key={index} className="grid grid-cols-5 items-center w-full py-2 border-b border-gray-700 animate-pulse">
+                                        <div key={index} className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-700 animate-pulse">
                                             <div className="text-left px-10">
                                                 <div className="h-5 bg-gray-700 rounded w-32 shimmer"></div>
                                             </div>
@@ -543,7 +543,7 @@ export default function Page() {
                                     .map((item, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-5 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll cursor-pointer"
+                                            className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll cursor-pointer"
                                             onClick={() => navigateToMemberDetails(item)}
                                         >
                                             <div className="text-left px-10">{item.name}</div>

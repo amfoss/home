@@ -25,7 +25,7 @@ function Profile({ mt = 0, rank = "" }) {
   const imgpath = "/placeholder.webp";
   const name = "Placeholder";
   let sticker = <Medal className="w-5 h-5" />;
-  if (rank == "Gold") {
+  if (rank === "Gold") {
     sticker = <Trophy className="w-5 h-5" />;
   }
   return (

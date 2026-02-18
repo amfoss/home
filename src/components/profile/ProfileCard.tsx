@@ -50,7 +50,7 @@ export const ProfileCard = ({
                     )}
                     <Image
                         src={githubUser ? `https://github.com/${githubUser}.png` : '/placeholder.webp'}
-                        alt={name}
+                        alt={name || "Profile Image"}
                         width={120}
                         height={120}
                         className="rounded-lg"

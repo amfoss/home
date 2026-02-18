@@ -39,6 +39,7 @@ export const MonthlyStats = ({
                         onClick={() => onMonthChange(selectedMonthOffset - 1)}
                         className="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors"
                         title="Previous month"
+                        aria-label="Previous month"
                     >
                         <ChevronLeft />
                     </button>
@@ -47,6 +48,7 @@ export const MonthlyStats = ({
                         disabled={selectedMonthOffset >= 0}
                         className="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Next month"
+                        aria-label="Next month"
                     >
                         <ChevronRight />
                     </button>
@@ -63,8 +65,8 @@ export const MonthlyStats = ({
             ) : (
                 <div className="flex flex-1 flex-wrap justify-around gap-4 sm:gap-2">
                     <div className="text-center gap-1 flex flex-col items-center min-w-[120px]">
-                        <div className={`text-2xl sm:text-3xl font-bold ${stats.absentDays <= 5 ? 'text-green-500' :
-                                stats.absentDays <= 10 ? 'text-yellow-500' :
+                        <div className={`text-2xl sm:text-3xl font-bold ${stats.presentDays >= stats.daysToConsider * 0.8 ? 'text-green-500' :
+                                stats.presentDays >= stats.daysToConsider * 0.6 ? 'text-yellow-500' :
                                     'text-red-500'
                             }`}>
                             {stats.presentDays}
@@ -83,8 +85,8 @@ export const MonthlyStats = ({
                     </div>
 
                     <div className="text-center gap-1 flex flex-col items-center min-w-[120px]">
-                        <div className={`text-2xl sm:text-3xl font-bold ${stats.absentDays <= 5 ? 'text-green-500' :
-                                stats.absentDays <= 10 ? 'text-yellow-500' :
+                        <div className={`text-2xl sm:text-3xl font-bold ${stats.attendanceRate >= 80 ? 'text-green-500' :
+                                stats.attendanceRate >= 60 ? 'text-yellow-500' :
                                     'text-red-500'
                             }`}>
                             {stats.attendanceRate}%

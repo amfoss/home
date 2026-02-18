@@ -50,13 +50,13 @@ export default function EditProfilePage() {
         if (member) {
           setProfileData(member);
           GetProfileService.HandleProfileImage(member).then((url) => {
-            if (url != "") setPreviewUrl(url);
+            if (url !== "") setPreviewUrl(url);
           }).catch(() => { });
 
           if (!member.rollNo) {
             setUserEnrolling(true);
           } else {
-            setGenToggle([member?.sex == "M", member?.sex == "F"]);
+            setGenToggle([member?.sex === "M", member?.sex === "F"]);
           }
         } else {
           setUserEnrolling(true);
@@ -202,7 +202,7 @@ export default function EditProfilePage() {
             `}
                         onClick={() => {
                           setGenToggle([idx === 0, idx === 1]);
-                          setProfileData({ ...profileData, sex: label == 'Male' ? 'M' : 'F' });
+                          setProfileData({ ...profileData, sex: label === 'Male' ? 'M' : 'F' });
                         }}
                       >
                         {label}

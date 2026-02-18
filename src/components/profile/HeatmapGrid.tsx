@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from 'react';
 
 export type HeatmapGridProps = {
     title: string;
@@ -17,7 +18,7 @@ export const HeatmapGrid = ({
     shape = 'rounded',
     loading = false
 }: HeatmapGridProps) => {
-    const getMonthLabels = () => {
+    const monthLabels = useMemo(() => {
         const currentMonth = new Date().getMonth();
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -28,7 +29,7 @@ export const HeatmapGrid = ({
         }
 
         return orderedMonths;
-    };
+    }, [monthsToDisplay]);
 
     if (loading) {
         return (
@@ -95,7 +96,7 @@ export const HeatmapGrid = ({
                             </div>
 
                             <div className="flex justify-around text-xs text-gray-500">
-                                {getMonthLabels().map((month, index) => (
+                                {monthLabels.map((month, index) => (
                                     <span key={index} className="text-center">{month}</span>
                                 ))}
                             </div>

@@ -93,7 +93,7 @@ export const GetProfileService = {
     type githubRes = {
       avatar_url: string;
     };
-    if (!member.githubUser || member?.githubUser != "") return "";
+    if (!member.githubUser || member?.githubUser !== "") return "";
     try {
       const response = await fetch(
         "https://api.github.com/users/" + member.githubUser,

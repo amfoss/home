@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Profile } from "@/components/LeaderBoardProfiles"
 import dynamic from 'next/dynamic';
@@ -13,9 +13,9 @@ export default function LeaderBoard() {
   const [loading, setLoading] = useState(true);
 
   // Simulate data loading - replace with actual data fetching
-  useState(() => {
+  useEffect(() => {
     setTimeout(() => setLoading(false), 2000);
-  });
+  }, []);
   return (
     <div className="w-full overflow-hidden gap-7 flex flex-col items-center bg-bgMainColor">
       <h1 className="mt-5 text-center text-white text-[3rem] sm:text-[2.5rem] md:text-[4.2rem] lg:text-[5rem] font-medium">
