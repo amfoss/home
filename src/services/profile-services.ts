@@ -93,7 +93,7 @@ export const GetProfileService = {
     type githubRes = {
       avatar_url: string;
     };
-    if (!member.githubUser || member?.githubUser != "") return "";
+    if (!member.githubUser || member?.githubUser !== "") return "";
     try {
       const response = await fetch(
         "https://api.github.com/users/" + member.githubUser,
@@ -102,19 +102,22 @@ export const GetProfileService = {
         const data: githubRes = await response.json();
         return data.avatar_url;
       } else {
-        console.log("Error fetching Profile Image!" + response.status);
         return "";
       }
-    } catch (e) {
-      console.log("Error has Occurred while fetching image:", e);
+    } catch {
       return "";
     }
   },
 
   async UpdateProfileDetails(
-    member: MemberProfileDetails
+    member: MemberProfileDetails,
   ): Promise<MemberProfileDetails | null> {
-    const { memberId: _memberId, role: _role, createdAt: _createdAt, ...updateData } = member;
+    const {
+      memberId: _memberId,
+      role: _role,
+      createdAt: _createdAt,
+      ...updateData
+    } = member;
     const cleanedMember = cleanInput({ ...updateData });
     try {
       const response = await client.mutate<MemberUpdateResponse>({

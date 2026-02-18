@@ -31,6 +31,9 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selected, setSelected] = useState<string>("attendance");
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [yearFilter, setYearFilter] = useState<string>("all");
+    const [sortBy, setSortBy] = useState<"name" | "year">("name");
     const [memberSummary, setMemberSummary] = useState<{
         enrichedData: Array<{
             id: string;
@@ -68,19 +71,19 @@ export default function Page() {
             }
 
             const lowAttendance = data
-                .filter((m) => m.absentCountByDate > (m.absentCountByDate+m.presentCountByDate)-4)
+                .filter((m) => m.absentCountByDate > (m.absentCountByDate + m.presentCountByDate) - 4)
                 .sort((a, b) => a.presentCountByDate - b.presentCountByDate);
             setLowCountAttendance(lowAttendance);
-            
+
             const lowStatus = [...data]
                 .sort((a, b) => a.statusUpdateCountByDate - b.statusUpdateCountByDate)
                 .slice(0, 20);
             setLowCountStatusUpdate(lowStatus);
-            
+
             const enrichedMemberData: EnrichedMemberData[] = data.map(member => {
                 const totalDays = member.presentCountByDate + member.absentCountByDate;
                 const attendanceRatio = totalDays > 0 ? member.presentCountByDate / totalDays : 0;
-                
+
                 return {
                     id: member.id,
                     name: member.name,
@@ -92,12 +95,12 @@ export default function Page() {
                     attendanceMonth: `${member.presentCountByDate}/${member.presentCountByDate + member.absentCountByDate}`
                 };
             });
-            
+
 
             const maxAttendance = Math.max(...enrichedMemberData.map(m => m.attendanceRatio || 0));
             const topAttendanceMembers = enrichedMemberData.filter(m => (m.attendanceRatio || 0) === maxAttendance);
-            
-    
+
+
             const maxStatusUpdates = Math.max(...enrichedMemberData.map(m => m.statusUpdateCountByDate || 0));
             const topStatusMembers = enrichedMemberData.filter(m => (m.statusUpdateCountByDate || 0) === maxStatusUpdates);
 
@@ -109,10 +112,10 @@ export default function Page() {
                 },
                 topStatusUpdate: {
                     memberName: topStatusMembers.length > 1 ? "Multiple members" : topStatusMembers[0]?.name || "Unknown",
-                    statusRatio: `${maxStatusUpdates}/${daysBetween}` // Use actual days between dates
+                    statusRatio: `${maxStatusUpdates}/${daysBetween}`
                 }
             });
-            
+
             setLoading(false);
         } catch (error) {
             console.error("Error processing member data:", error);
@@ -146,7 +149,7 @@ export default function Page() {
             });
 
             allDates.forEach((date) => {
-                const entry = dailyAttendance.find((att: { date: string; count: number}) => att.date === date);
+                const entry = dailyAttendance.find((att: { date: string; count: number }) => att.date === date);
                 dateLabels.push(new Date(date).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
@@ -231,11 +234,11 @@ export default function Page() {
         return `${formatDate(startDate)} - ${formatDate(date)}`;
     };
 
-    const getStartDate = (date: Date) : string => {
+    const getStartDate = (date: Date): string => {
         return date.toISOString().split("T")[0];
     };
 
-    const getEndDate = (date: Date) : string => {
+    const getEndDate = (date: Date): string => {
         return date.toISOString().split("T")[0];
     };
 
@@ -329,95 +332,145 @@ export default function Page() {
                                 <div className="grid grid-cols-[1fr,minmax(70px,auto),minmax(70px,auto)] items-center w-full">
                                     <div className="px-5">Name</div>
                                     {selected === "attendance" ? (
-                                    <>
-                                        <div className="pl-5">Attended</div>
-                                        <div className="pl-5">Missed</div>
-                                    </>
+                                        <>
+                                            <div className="pl-5">Attended</div>
+                                            <div className="pl-5">Missed</div>
+                                        </>
                                     ) : (
-                                    <>
-                                        <div className="pl-5">Updates</div>
-                                        <div className="pl-5">Missed</div>
-                                    </>
+                                        <>
+                                            <div className="pl-5">Updates</div>
+                                            <div className="pl-5">Missed</div>
+                                        </>
                                     )}
                                 </div>
 
                                 <hr className="border-t border-white mt-2" />
 
-                                {selected === "attendance" ? (
-                                    lowCountAttendance.length === 0 ? (
-                                    <p className="text-center p-2 text-red-500">No data available</p>
-                                    ) : (
-                                    [...lowCountAttendance]
-                                    .map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
-                                    >
-                                        <div className="px-5">{item.name}</div>
-                                        <div className="pl-5">{item.presentCountByDate}</div>
-                                        <div className="pl-5 text-red-500">{item.absentCountByDate}</div>
+                                {loading ? (
+                                    <div className="flex flex-col w-full space-y-2">
+                                        {[...Array(6)].map((_, index) => (
+                                            <div key={index} className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-700 animate-pulse">
+                                                <div className="px-5">
+                                                    <div className="h-5 bg-gray-700 rounded w-3/4 shimmer"></div>
+                                                </div>
+                                                <div className="pl-5">
+                                                    <div className="h-5 bg-gray-700 rounded w-8 shimmer"></div>
+                                                </div>
+                                                <div className="pl-5">
+                                                    <div className="h-5 bg-gray-700 rounded w-8 shimmer"></div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    ))
-                                        )
-                                    ) : lowCountStatusUpdate.length === 0 ? (
-                                        <p className="text-center p-2 text-red-500">No data available</p>
+                                ) : selected === "attendance" ? (
+                                    lowCountAttendance.length === 0 ? (
+                                        <p className="text-center p-2 text-[#facfa5]">✨ No data available ✨</p>
                                     ) : (
-                                        [...lowCountStatusUpdate]
+                                        [...lowCountAttendance]
+                                            .map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
+                                                >
+                                                    <div className="px-5">{item.name}</div>
+                                                    <div className="pl-5">{item.presentCountByDate}</div>
+                                                    <div className="pl-5 text-red-500">{item.absentCountByDate}</div>
+                                                </div>
+                                            ))
+                                    )
+                                ) : lowCountStatusUpdate.length === 0 ? (
+                                    <p className="text-center p-2 text-[#facfa5]">✨ No data available ✨</p>
+                                ) : (
+                                    [...lowCountStatusUpdate]
                                         .map((item, index) => (
                                             <div
-                                            key={index}
-                                            className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
+                                                key={index}
+                                                className="grid grid-cols-[1fr,minmax(70px,auto),minmax(50px,auto)] items-center w-full py-2 border-b border-gray-500"
                                             >
-                                            <div className="px-5">{item.name}</div>
-                                            <div className="pl-5">{item.statusUpdateCountByDate}</div>
-                                            <div className="pl-5 text-red-500">
-                                                {(item.presentCountByDate + item.absentCountByDate) - item.statusUpdateCountByDate}
-                                            </div>
+                                                <div className="px-5">{item.name}</div>
+                                                <div className="pl-5">{item.statusUpdateCountByDate}</div>
+                                                <div className="pl-5 text-red-500">
+                                                    {(item.presentCountByDate + item.absentCountByDate) - item.statusUpdateCountByDate}
+                                                </div>
                                             </div>
                                         ))
-                                    )}
+                                )}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
                 <h3 className="text-lg font-semibold mt-5">Hall Of Fame</h3>
                 <div className="flex flex-col md:flex-row w-full mt-2 text-ye">
-                    <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
-                        <CardHeader>
-                            <CardTitle className="text-yellow-500">Most Attendance</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-bold">{memberSummary.topAttendance.memberName}</p>
-                            <p className="text-sm text-yellow-400">{memberSummary.topAttendance.attendanceRatio} attendance</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
-                        <CardHeader>
-                            <CardTitle className="text-yellow-500">Most Status Updates</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-bold">{memberSummary.topStatusUpdate.memberName}</p>
-                            <p className="text-sm text-yellow-400">{memberSummary.topStatusUpdate.statusRatio} updates</p>
-                        </CardContent>
-                    </Card>
+                    {loading ? (
+                        <>
+                            {[1, 2, 3].map((item) => (
+                                <Card key={item} className="m-2 bg-panelButtonColor w-full md:w-1/3">
+                                    <CardHeader>
+                                        <div className="h-6 bg-gray-700 rounded w-40 shimmer"></div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-6 bg-gray-700 rounded w-32 mb-2 shimmer"></div>
+                                        <div className="h-4 bg-gray-700 rounded w-24 shimmer"></div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </>
+                    ) : (
+                        <>
+                            <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
+                                <CardHeader>
+                                    <CardTitle className="text-yellow-500">Most Attendance</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-bold">{memberSummary.topAttendance.memberName}</p>
+                                    <p className="text-sm text-yellow-400">{memberSummary.topAttendance.attendanceRatio} attendance</p>
+                                </CardContent>
+                            </Card>
+                            <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
+                                <CardHeader>
+                                    <CardTitle className="text-yellow-500">Most Status Updates</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-bold">{memberSummary.topStatusUpdate.memberName}</p>
+                                    <p className="text-sm text-yellow-400">{memberSummary.topStatusUpdate.statusRatio} updates</p>
+                                </CardContent>
+                            </Card>
 
-                    <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
-                        <CardHeader>
-                            <CardTitle className="text-yellow-500">Highest CP Score</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Unknown: 0</p>
-                        </CardContent>
-                    </Card>
+                            <Card className="m-2 bg-panelButtonColor w-full md:w-1/3">
+                                <CardHeader>
+                                    <CardTitle className="text-yellow-500">Highest CP Score</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>Unknown: 0</p>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                 </div>
                 <Card
                     className="m-2 bg-panelButtonColor w-[98.5%]">
-                    <CardHeader options={
+                    <CardHeader options={(
                         <div className="flex items-center space-x-2">
+                            <div className="flex gap-1 mr-2">
+                                {["all", "1", "2", "3", "4"].map((year) => (
+                                    <button
+                                        key={year}
+                                        onClick={() => setYearFilter(year)}
+                                        className={`px-2 py-1 text-xs rounded ${yearFilter === year
+                                            ? "bg-primaryYellow text-black font-semibold"
+                                            : "bg-bgMainColor text-offWhite hover:bg-gray-700"
+                                            }`}
+                                    >
+                                        {year === "all" ? "All" : `${year}Y`}
+                                    </button>
+                                ))}
+                            </div>
                             <div className="relative w-44">
                                 <input
                                     type="text"
                                     placeholder="Search..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     className="px-4 py-1 border rounded-md w-full bg-bgMainColor text-offWhite text-sm pr-10"
                                 />
                                 <Search
@@ -426,36 +479,81 @@ export default function Page() {
                                 />
                             </div>
                         </div>
-                    }>
+                    )}>
                         <CardTitle>Members</CardTitle>
                     </CardHeader>
                     <CardContent
                         className="pt-5 overflow-x-scroll">
-                        <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[500px] md:overflow-x-hidden">
+                        <div className="w-full max-h-96 h-fit overflow-y-scroll overflow-x-scroll min-w-[600px] md:overflow-x-hidden">
                             <div className="grid grid-cols-4 items-center w-full text-white font-bold py-2 overflow-x-scroll">
-                                <div className="text-left px-10">Members</div>
+                                <div
+                                    className="text-left px-10 cursor-pointer hover:text-primaryYellow transition-colors"
+                                    onClick={() => setSortBy("name")}
+                                >
+                                    Name {sortBy === "name" && "↓"}
+                                </div>
+                                <div
+                                    className="text-center cursor-pointer hover:text-primaryYellow transition-colors"
+                                    onClick={() => setSortBy("year")}
+                                >
+                                    Year {sortBy === "year" && "↓"}
+                                </div>
                                 <div className="text-center">Attendance</div>
                                 <div className="text-right px-10">Status Updates</div>
                             </div>
 
                             <hr className="border-t border-gray-600" />
 
-                            {memberSummary.enrichedData.length === 0 ? (
-                                <p className="text-center p-4 text-gray-400">No member data available</p>
-                            ) : (
-                                memberSummary.enrichedData.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll"
-                                        onClick={() => navigateToMemberDetails(item)}
-                                    >
-                                        <div className="text-left px-10">{item.name}</div>
-                                        <div className="text-center">{item.attendanceMonth}</div>
-                                        <div className="text-right px-10">
-                                            {item.statusUpdateCountByDate}/{daysBetween}
+                            {loading ? (
+                                <div className="flex flex-col w-full">
+                                    {[...Array(8)].map((_, index) => (
+                                        <div key={index} className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-700 animate-pulse">
+                                            <div className="text-left px-10">
+                                                <div className="h-5 bg-gray-700 rounded w-32 shimmer"></div>
+                                            </div>
+                                            <div className="text-center flex justify-center">
+                                                <div className="h-5 bg-gray-700 rounded w-8 shimmer"></div>
+                                            </div>
+                                            <div className="text-center flex justify-center">
+                                                <div className="h-5 bg-gray-700 rounded w-16 shimmer"></div>
+                                            </div>
+                                            <div className="text-right px-10 flex justify-end">
+                                                <div className="h-5 bg-gray-700 rounded w-12 shimmer"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    ))}
+                                </div>
+                            ) : memberSummary.enrichedData.length === 0 ? (
+                                <p className="text-center p-4 text-[#facfa5]">✨ No member data available ✨</p>
+                            ) : (
+                                memberSummary.enrichedData
+                                    .filter((item) => {
+                                        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            item.year.toString().includes(searchTerm);
+                                        const matchesYear = yearFilter === "all" || item.year.toString() === yearFilter;
+                                        return matchesSearch && matchesYear;
+                                    })
+                                    .sort((a, b) => {
+                                        if (sortBy === "name") {
+                                            return a.name.localeCompare(b.name);
+                                        } else {
+                                            return parseInt(a.year) - parseInt(b.year);
+                                        }
+                                    })
+                                    .map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="grid grid-cols-4 items-center w-full py-2 border-b border-gray-500 opacity-90 transition-all duration-300 ease-in-out hover:opacity-100 font-light hover:scale-x-105 hover:font-normal overflow-x-scroll cursor-pointer"
+                                            onClick={() => navigateToMemberDetails(item)}
+                                        >
+                                            <div className="text-left px-10">{item.name}</div>
+                                            <div className="text-center">{item.year}</div>
+                                            <div className="text-center">{item.attendanceMonth}</div>
+                                            <div className="text-right px-10">
+                                                {item.statusUpdateCountByDate}/{daysBetween}
+                                            </div>
+                                        </div>
+                                    ))
                             )}
                         </div>
                     </CardContent>

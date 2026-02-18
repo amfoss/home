@@ -1,8 +1,9 @@
 "use client";
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import { config } from "./config";
 
 const link = new HttpLink({
-  uri: "https://root.amfoss.in",
+  uri: config.graphqlUrl,
   credentials: "include",
 });
 

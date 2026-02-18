@@ -41,33 +41,25 @@ import {
 } from "@/components/Card";
 
 export default function Page() {
-  // State for attendance data
   const [attendanceData, setAttendanceData] = useState<AttendanceDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  // Define constants outside of the component to prevent recreation on each render
   const attendanceListTitle = React.useMemo(() => ["Name", "Year", "In Time", "Out Time"], []);
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
-      try {
-        const data = await AttendanceService.getAttendanceDetails(
-          selectedDate.toISOString().split("T")[0]
-        );
-        setAttendanceData(data);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch attendance data " + err);
-        setLoading(false);
-      }
+      const data = await AttendanceService.getAttendanceDetails(
+        selectedDate.toISOString().split("T")[0]
+      );
+      setAttendanceData(data);
+      setLoading(false);
     };
     fetchAttendanceData();
   }, [selectedDate]);
 
-  // Memoize the handleDateClick function to prevent recreation on each render
   const handleDateClick = React.useCallback((date: Date) => {
     setSelectedDate(date);
   }, []);
@@ -77,7 +69,7 @@ export default function Page() {
     try {
       const parts = timeString.split(":");
       if (parts.length < 3) return null;
-      
+
       const hours = parseInt(parts[0], 10);
       const min = parseInt(parts[1], 10);
 
@@ -92,8 +84,7 @@ export default function Page() {
 
       const timeInMS = (min * 60 + hours * 3600 + seconds) * 1000 + milliSeconds;
       return timeInMS;
-    } catch (error) {
-      console.error("Error parsing time string:", timeString, error);
+    } catch {
       return null;
     }
   }, []);
@@ -104,52 +95,39 @@ export default function Page() {
     let minTime = Number.MAX_SAFE_INTEGER;
     let foundAtLeastOneValidTime = false;
 
-    // Only consider present members for minimum time calculation
     const presentMembersOnly = attendanceData.filter(member => member.isPresent);
-    
+
     for (const member of presentMembersOnly) {
       const memberTimeInMS = timeStringToMS(member.timeIn);
-      if (memberTimeInMS != null) {
+      if (memberTimeInMS !== null) {
         if (memberTimeInMS < minTime) minTime = memberTimeInMS;
         foundAtLeastOneValidTime = true;
       }
     }
-    
-    console.log("Minimum time found:", foundAtLeastOneValidTime ? new Date(minTime).toISOString() : "None");
+
     return foundAtLeastOneValidTime ? minTime : null;
   }, [attendanceData, timeStringToMS]);
 
+  const LATE_THRESHOLD_MS = 30 * 60 * 1000;
 
-  // Define time as a constant outside of render to avoid recreating it on each render
-  const LATE_THRESHOLD_MS = 30 * 60 * 1000; 
-  
-  // Calculate late time only when minimumTime changes
   const lateTime = useMemo(() => {
     if (!minimumTime) return null;
     const late = minimumTime + LATE_THRESHOLD_MS;
-    console.log("Late threshold set at:", new Date(late).toISOString());
     return late;
   }, [minimumTime, LATE_THRESHOLD_MS]);
 
-  // Memoize the filtered member arrays to avoid recalculating on every render
   const { absentMembers, presentMembers, lateMembers, filteredData } = useMemo(() => {
-    // First, separate present and absent members
     const absent = attendanceData.filter(member => !member.isPresent);
     let present = [];
     const late = [];
-    
-    // Only process present members if we have a valid late threshold
+
     if (lateTime !== null) {
-      // Split present members into on-time and late
       for (const member of attendanceData) {
         if (!member.isPresent) continue;
-        
+
         const memberTimeInMS = timeStringToMS(member.timeIn);
         if (memberTimeInMS === null) continue;
-        
-        // Debug the comparison
-        console.log(`Member ${member.member.name}: Time ${member.timeIn} (${memberTimeInMS}) vs Late threshold ${lateTime}`);
-        
+
         if (memberTimeInMS < lateTime) {
           present.push(member);
         } else {
@@ -157,12 +135,9 @@ export default function Page() {
         }
       }
     } else {
-      // If no valid late threshold, consider all present members as on-time
       present = attendanceData.filter(member => member.isPresent);
     }
-    
-    console.log(`Found ${absent.length} absent, ${present.length} on-time, and ${late.length} late members`);
-    
+
     return {
       absentMembers: absent,
       presentMembers: present,
@@ -171,7 +146,6 @@ export default function Page() {
     };
   }, [attendanceData, lateTime, timeStringToMS]);
 
-  // Memoize the chart data to prevent unnecessary recalculations
   const chartData = useMemo(() => ({
     labels: ["Present OnTime", "Absent", "Late"],
     datasets: [
@@ -196,7 +170,7 @@ export default function Page() {
       },
     ],
   }), [presentMembers.length, absentMembers.length, lateMembers.length]);
-  
+
   return (
     <div className="flex overflow-scroll h-screen w-full mb-5 flex-shrink-0 scroll-smooth">
       <div className="flex flex-col w-full max-h-fit p-5">
@@ -240,7 +214,21 @@ export default function Page() {
                     <hr className="border-t border-white mt-2" />
                   </div>
                   {loading ? (
-                    <p className="text-center p-2 text-white"> Loading...</p>
+                    <div className="flex flex-col w-full space-y-3">
+                      {[...Array(5)].map((_, index) => (
+                        <div key={index} className="grid grid-cols-[1fr_90px_90px] items-center w-full py-2 border-b border-gray-700 animate-pulse">
+                          <div className="px-5">
+                            <div className="h-5 bg-gray-700 rounded-md w-3/4 shimmer"></div>
+                          </div>
+                          <div className="text-center">
+                            <div className="h-5 bg-gray-700 rounded-md w-8 mx-auto shimmer"></div>
+                          </div>
+                          <div className="pl-5">
+                            <div className="h-5 bg-gray-700 rounded-md w-16 shimmer"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : error ? (
                     <div className="text-center p-4 text-red-500">{error}</div>
                   ) : lateMembers.length === 0 ? (
@@ -252,9 +240,8 @@ export default function Page() {
                         className="grid grid-cols-[1fr_90px_90px] items-center w-full py-2 border-b border-gray-500"
                       >
                         <div
-                          className={`px-5 text-[#facfa5] overflow-hidden ${
-                            expandedRow !== index && "text-ellipsis whitespace-nowrap"
-                          }`}
+                          className={`px-5 text-[#facfa5] overflow-hidden ${expandedRow !== index && "text-ellipsis whitespace-nowrap"
+                            }`}
                           onClick={() =>
                             setExpandedRow(expandedRow === index ? null : index)
                           }

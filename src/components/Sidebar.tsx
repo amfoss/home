@@ -23,7 +23,7 @@ const buttons = [
     },
     {
         name: "Profile",
-        icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>,
+        icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 1 0-16 0" /></svg>,
         path: "/profile"
     }
 ];
@@ -33,7 +33,7 @@ const SidePanel: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
- 
+
     useEffect(() => {
         setIsMounted(true);
     }, []);
@@ -51,7 +51,7 @@ const SidePanel: React.FC = () => {
         <div className="relative md:bg-panelColor md:rounded-md md:min-h-full">
             {/* Mobile menu button - positioned in the header */}
             {isMounted && (
-                <button 
+                <button
                     onClick={toggleSidebar}
                     className="p-2 rounded-md md:hidden z-40"
                     aria-label={isExpanded ? "Close sidebar" : "Open sidebar"}
@@ -59,10 +59,10 @@ const SidePanel: React.FC = () => {
                     <Menu className="w-5 h-5 text-offWhite" />
                 </button>
             )}
-            
+
             {/* Mobile View - Background overlay */}
             {isMounted && (
-                <div 
+                <div
                     className={`
                         fixed md:hidden inset-0 bg-black bg-opacity-60 z-30
                         ${isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
@@ -71,12 +71,12 @@ const SidePanel: React.FC = () => {
                     onClick={() => setIsExpanded(false)}
                 />
             )}
-            
+
             {/* Full sidebar content */}
-            <div 
+            <div
                 className={`
-                    ${isExpanded 
-                        ? 'fixed inset-y-0 left-0 w-[280px] z-40 shadow-2xl' 
+                    ${isExpanded
+                        ? 'fixed inset-y-0 left-0 w-[280px] z-40 shadow-2xl'
                         : 'hidden md:flex'}
                     flex-col items-center p-4
                     transition-all duration-300 ease-in-out
@@ -86,7 +86,7 @@ const SidePanel: React.FC = () => {
             >
                 {/* Close button for mobile expanded sidebar */}
                 {isMounted && isExpanded && (
-                    <button 
+                    <button
                         onClick={toggleSidebar}
                         className="absolute top-4 right-4 p-2 rounded-md bg-panelButtonColor md:hidden"
                         aria-label="Close sidebar"
@@ -97,8 +97,8 @@ const SidePanel: React.FC = () => {
                 {/* Logo and title */}
                 <div className="flex flex-col items-center justify-center mb-6 md:mb-5 w-full pt-4">
                     <Image
-                        src="/amfoss-logo-white.png"
-                        alt="amfoss-logo-white"
+                        src="/amfoss-logo-white-square.png"
+                        alt="amfoss logo"
                         className="w-[40px] h-auto sm:w-[45px] md:w-[45px] lg:w-[50px] object-contain"
                         width={50}
                         height={50}

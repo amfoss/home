@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Profile } from "@/components/LeaderBoardProfiles"
 import dynamic from 'next/dynamic';
@@ -10,6 +10,12 @@ const LeaderboardTable = dynamic(() => import("@/components/LeaderboardTable"), 
 
 export default function LeaderBoard() {
   const [alltimemode, setmode] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Simulate data loading - replace with actual data fetching
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 2000);
+  }, []);
   return (
     <div className="w-full overflow-hidden gap-7 flex flex-col items-center bg-bgMainColor">
       <h1 className="mt-5 text-center text-white text-[3rem] sm:text-[2.5rem] md:text-[4.2rem] lg:text-[5rem] font-medium">
@@ -17,8 +23,7 @@ export default function LeaderBoard() {
       </h1>
       <div className="flex justify-evenly items-center rounded-xl bg-LeaderBoardCommon w-[50%]">
         <button
-          className={`transition-colors duration-300 flex w-[50%] justify-center items-center rounded-md ${
-            alltimemode ? "bg-LeaderBoardCommonHigh" : "bg-LeaderBoardCommon"}`}
+          className={`transition-colors duration-300 flex w-[50%] justify-center items-center rounded-md ${alltimemode ? "bg-LeaderBoardCommonHigh" : "bg-LeaderBoardCommon"}`}
           onClick={() => setmode(!alltimemode)}
         >
           <p className="text-lg font-semibold text-white mt-2 ml-2 mb-2">
@@ -26,8 +31,7 @@ export default function LeaderBoard() {
           </p>
         </button>
         <button
-          className={`transition-colors duration-300 flex w-[50%] justify-center items-center rounded-md ${
-            alltimemode ? "bg-LeaderBoardCommon" : "bg-LeaderBoardCommonHigh"}`}
+          className={`transition-colors duration-300 flex w-[50%] justify-center items-center rounded-md ${alltimemode ? "bg-LeaderBoardCommon" : "bg-LeaderBoardCommonHigh"}`}
           onClick={() => setmode(!alltimemode)}
         >
           <p className="text-lg font-semibold  text-white mt-2 mr-2 mb-2">
@@ -45,8 +49,8 @@ export default function LeaderBoard() {
           You have been placed at X rank with XXXX points.
         </p>
       </div>
-  
-      <LeaderboardTable isAllTime={alltimemode} />
+
+      <LeaderboardTable isAllTime={alltimemode} loading={loading} />
     </div>
   );
 }
